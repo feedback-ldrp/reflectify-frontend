@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+}
+
+@layer base {
+  :root {
+    /* Primary Colors */
+    --color-primary-main: theme("colors.primary.main");
+    --color-primary-light: theme("colors.primary.light");
+    --color-primary-lighter: theme("colors.primary.lighter");
+    --color-primary-dark: theme("colors.primary.dark");
+    --color-primary-darker: theme("colors.primary.darker");
+    --color-primary-textDark: theme("colors.primary.textDark");
+    --color-primary-bgDark: theme("colors.primary.bgDark");
+    --color-primary-borderLight: theme("colors.primary.borderLight");
+
+    /* Secondary Colors */
+    --color-secondary-lighter: theme("colors.secondary.lighter");
+    --color-secondary-light: theme("colors.secondary.light");
+    --color-secondary-main: theme("colors.secondary.main");
+    --color-secondary-dark: theme("colors.secondary.dark");
+    --color-secondary-darker: theme("colors.secondary.darker");
+
+    /* Positive (Success) Colors */
+    --color-positive-lighter: theme("colors.positive.lighter");
+    --color-positive-light: theme("colors.positive.light");
+    --color-positive-main: theme("colors.positive.main");
+    --color-positive-dark: theme("colors.positive.dark");
+    --color-positive-darker: theme("colors.positive.darker");
+    --color-positive-textDark: theme("colors.positive.textDark");
+
+    /* Warning Colors */
+    --color-warning-lighter: theme("colors.warning.lighter");
+    --color-warning-light: theme("colors.warning.light");
+    --color-warning-main: theme("colors.warning.main");
+    --color-warning-dark: theme("colors.warning.dark");
+    --color-warning-darker: theme("colors.warning.darker");
+    --color-warning-textDark: theme("colors.warning.textDark");
+
+    /* Negative (Error) Colors */
+    --color-negative-lighter: theme("colors.negative.lighter");
+    --color-negative-light: theme("colors.negative.light");
+    --color-negative-main: theme("colors.negative.main");
+    --color-negative-dark: theme("colors.negative.dark");
+    --color-negative-darker: theme("colors.negative.darker");
+    --color-negative-textDark: theme("colors.negative.textDark");
+
+    /* Highlight1 (Info) Colors */
+    --color-highlight1-lighter: theme("colors.highlight1.lighter");
+    --color-highlight1-light: theme("colors.highlight1.light");
+    --color-highlight1-main: theme("colors.highlight1.main");
+    --color-highlight1-dark: theme("colors.highlight1.dark");
+    --color-highlight1-darker: theme("colors.highlight1.darker");
+    --color-highlight1-textDark: theme("colors.highlight1.textDark");
+
+    /* Highlight2 Colors */
+    --color-highlight2-lighter: theme("colors.highlight2.lighter");
+    --color-highlight2-light: theme("colors.highlight2.light");
+    --color-highlight2-main: theme("colors.highlight2.main");
+    --color-highlight2-dark: theme("colors.highlight2.dark");
+    --color-highlight2-darker: theme("colors.highlight2.darker");
+
+    /* Light Theme Specific Colors (default for :root) */
+    --color-light-text: theme("colors.light.text");
+    --color-light-background: theme("colors.light.background");
+    --color-light-highlight: theme("colors.light.highlight");
+    --color-light-muted-text: theme("colors.light.muted.text");
+    --color-light-muted-background: theme("colors.light.muted.background");
+    --color-light-noisy-text: theme("colors.light.noisy.text");
+    --color-light-noisy-background: theme("colors.light.noisy.background");
+    --color-light-hover: theme("colors.light.hover");
+    --color-light-secondary: theme("colors.light.secondary");
+    --color-light-tertiary: theme("colors.light.tertiary");
+  }
+
+  /* Dark Mode Specific Colors */
+  /* These will override the :root variables when the 'dark' class is applied to the html tag */
+  html.dark {
+    /* Dark Theme Specific Colors */
+    --color-dark-text: theme("colors.dark.text");
+    --color-dark-background: theme("colors.dark.background");
+    --color-dark-highlight: theme("colors.dark.highlight");
+    --color-dark-muted-text: theme("colors.dark.muted.text");
+    --color-dark-muted-background: theme("colors.dark.muted.background");
+    --color-dark-noisy-text: theme("colors.dark.noisy.text");
+    --color-dark-noisy-background: theme("colors.dark.noisy.background");
+    --color-dark-hover: theme("colors.dark.hover");
+    --color-dark-secondary: theme("colors.dark.secondary");
+    --color-dark-tertiary: theme("colors.dark.tertiary");
+
+    /* If primary colors change in dark mode, define them here.
+       Otherwise, they will inherit from the :root (light mode) definition.
+       Based on your config, primary.main and primary.light are the same for both. */
+    /* --color-primary-main: theme('colors.primary.main'); */
+    /* --color-primary-light: theme('colors.primary.light'); */
+  }
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
+  width: 0px;
+}
