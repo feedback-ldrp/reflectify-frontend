@@ -120,8 +120,8 @@ export default function ContactPage() {
         {
             icon: EnvelopeIcon,
             label: "Email",
-            value: "reflectify.ldrp@gmail.com",
-            href: "mailto:reflectify.ldrp@gmail.com",
+            value: "feedback_ce@ldrp.ac.in",
+            href: "mailto:feedback_ce@ldrp.ac.in",
         },
         {
             icon: MapPinIcon,

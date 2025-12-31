@@ -108,7 +108,7 @@ export function Footer() {
                             <li className="flex items-start space-x-3">
                                 <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-primary-dark dark:text-primary-light mt-1 shrink-0" />
                                 <span className="text-sm sm:text-base text-secondary-dark dark:text-dark-tertiary break-all">
-                                    reflectify.ldrp@gmail.com
+                                    feedback_ce@ldrp.ac.in
                                 </span>
                             </li>
                             <li className="flex items-start space-x-3">
