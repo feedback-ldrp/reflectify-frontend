@@ -42,7 +42,7 @@ export function Features() {
       ].map((feature, index) => (
         <div
           key={index}
-          className="bg-light-secondary dark:bg-dark-secondary p-6 rounded-xl shadow-md hover:shadow-xl transform hover:scale-105 transition-transform duration-300"
+          className="bg-light-secondary dark:bg-dark-secondary p-6 rounded-lg shadow-sm hover:shadow-md transform hover:scale-[1.02] transition-all duration-300"
         >
           <div className="text-4xl mb-4 text-light-highlight dark:text-dark-highlight">
             {feature.icon}

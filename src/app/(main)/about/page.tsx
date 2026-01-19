@@ -108,7 +108,7 @@ export default function AboutPage() {
               {features.map((feature, index) => (
                 <Card
                   key={index}
-                  className="p-6 hover:shadow-lg transition-shadow"
+                  className="p-6 hover:shadow-md transition-all duration-200"
                 >
                   <div className="flex items-start gap-4">
                     <div className="p-3 bg-primary-lighter rounded-xl">
@@ -144,7 +144,7 @@ export default function AboutPage() {
               {teamMembers.map((member, index) => (
                 <Card
                   key={index}
-                  className="p-6 text-center hover:shadow-lg transition-shadow"
+                  className="p-6 text-center hover:shadow-md transition-all duration-200"
                 >
                   <div className="space-y-4">
                     <div className="flex justify-center">

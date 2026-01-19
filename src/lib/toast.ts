@@ -97,10 +97,15 @@ export const authToast = {
 
 // App action toast helpers
 export const appToast = {
+    // CRUD Operations
     saveSuccess: (item: string = "Data") =>
         showToast.success(`${item} saved successfully!`),
     saveError: (item: string = "Data") =>
         showToast.error(`Failed to save ${item.toLowerCase()}`),
+    createSuccess: (item: string = "Item") =>
+        showToast.success(`${item} created successfully!`),
+    createError: (item: string = "Item") =>
+        showToast.error(`Failed to create ${item.toLowerCase()}`),
     deleteSuccess: (item: string = "Item") =>
         showToast.success(`${item} deleted successfully!`),
     deleteError: (item: string = "Item") =>
@@ -109,21 +114,59 @@ export const appToast = {
         showToast.success(`${item} updated successfully!`),
     updateError: (item: string = "Data") =>
         showToast.error(`Failed to update ${item.toLowerCase()}`),
+    
+    // File Operations
     uploadSuccess: (item: string = "File") =>
         showToast.success(`${item} uploaded successfully!`),
     uploadError: (item: string = "File") =>
         showToast.error(`Failed to upload ${item.toLowerCase()}`),
+    downloadSuccess: (item: string = "File") =>
+        showToast.success(`${item} downloaded successfully!`),
+    downloadError: (item: string = "File") =>
+        showToast.error(`Failed to download ${item.toLowerCase()}`),
+    
+    // Clipboard
     copySuccess: (item: string = "Content") =>
         showToast.success(`${item} copied to clipboard!`, { duration: 2000 }),
     copyError: () => showToast.error("Failed to copy to clipboard"),
+    
+    // Data Operations
+    fetchError: (item: string = "data") =>
+        showToast.error(`Failed to fetch ${item.toLowerCase()}`),
+    loadSuccess: (item: string = "Data") =>
+        showToast.success(`${item} loaded successfully!`, { duration: 2000 }),
+    refreshSuccess: () =>
+        showToast.success("Data refreshed!", { duration: 2000 }),
+    refreshError: () =>
+        showToast.error("Failed to refresh data"),
+    
+    // Status Changes
+    statusChanged: (item: string, status: string) =>
+        showToast.success(`${item} ${status.toLowerCase()} successfully!`),
+    activated: (item: string = "Item") =>
+        showToast.success(`${item} activated!`),
+    deactivated: (item: string = "Item") =>
+        showToast.success(`${item} deactivated!`),
+    
+    // Errors
     networkError: () =>
         showToast.error("Network error. Please check your connection.", {
             duration: 5000,
         }),
     permissionDenied: () =>
         showToast.error("You don't have permission to perform this action"),
+    serverError: () =>
+        showToast.error("Server error. Please try again later."),
+    validationError: (message?: string) =>
+        showToast.error(message || "Please check your input and try again"),
+    
+    // Info
     comingSoon: () =>
         showToast.info("This feature is coming soon!", { duration: 3000 }),
+    noChanges: () =>
+        showToast.info("No changes to save", { duration: 2000 }),
+    alreadyExists: (item: string = "Item") =>
+        showToast.warning(`${item} already exists`),
 };
 
 export { toast };

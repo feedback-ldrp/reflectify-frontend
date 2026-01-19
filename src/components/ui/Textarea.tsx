@@ -21,8 +21,10 @@ export type TextareaResize =
   | "auto";
 
 // Textarea props
-export interface TextareaProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "size"> {
+export interface TextareaProps extends Omit<
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  "size"
+> {
   /** Label text */
   label?: string;
   /** Helper text below the textarea */
@@ -212,11 +214,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             rows={resize !== "auto" ? minRows : undefined}
             className={cn(
               // Base styles
-              "block w-full rounded-lg border border-gray-300 transition-all duration-200",
-              "focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:ring-offset-2",
-              "dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100",
-              "dark:focus:border-primary-400 dark:focus:ring-primary-800 dark:focus:ring-offset-gray-900",
-              "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+              "block w-full rounded-lg border border-light-secondary dark:border-dark-secondary transition-all duration-200",
+              "bg-light-background dark:bg-dark-muted-background text-light-text dark:text-dark-text",
+              "focus:border-primary-main focus:ring-2 focus:ring-primary-main/20 dark:focus:border-primary-main dark:focus:ring-primary-main/20",
+              "placeholder:text-light-muted-text dark:placeholder:text-dark-noisy-text",
 
               // Size variants
               sizeClasses.textarea,

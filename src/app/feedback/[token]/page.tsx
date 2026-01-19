@@ -8,7 +8,6 @@ import {
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import { showToast } from "@/lib/toast";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 
 // Import components
 import { Button } from "@/components/ui/Button";
@@ -491,10 +490,7 @@ export default function StudentFeedbackPage({
   if (hasBatchQuestions && !batchConfirmed) {
     return (
       <div className="min-h-screen bg-light-muted-background dark:bg-dark-background flex items-center justify-center">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        <Card className="p-10 bg-light-background dark:bg-dark-muted-background shadow-lg rounded-2xl transition-all max-w-lg">
+        <Card className="p-10 bg-light-background dark:bg-dark-muted-background shadow-md rounded-lg transition-all max-w-lg">
           <h2 className="text-2xl font-bold text-light-text dark:text-dark-text mb-4 text-center">
             Select Your Batch(es)
           </h2>
@@ -514,11 +510,11 @@ export default function StudentFeedbackPage({
               <button
                 key={batch}
                 onClick={() => toggleBatchSelection(batch as string)}
-                className={`text-base flex items-center justify-center py-3 px-5 rounded-xl font-medium transition-all
-                           focus:outline-none focus:ring-2 focus:ring-primary-main focus:ring-offset-2
-                           shadow-md hover:shadow-xl ${
+                className={`text-base flex items-center justify-center py-3 px-5 rounded-lg font-medium transition-all duration-200
+                           focus:outline-none focus:ring-2 focus:ring-primary-main/20
+                           shadow-sm hover:shadow-md ${
                              selectedBatches.includes(batch)
-                               ? "bg-light-highlight dark:bg-dark-highlight text-white ring-2 ring-offset-2 ring-light-highlight dark:ring-dark-highlight"
+                               ? "bg-light-highlight dark:bg-dark-highlight text-white"
                                : "bg-light-secondary dark:bg-dark-secondary text-light-text dark:text-dark-text hover:bg-light-highlight/20 dark:hover:bg-dark-highlight/20"
                            }`}
               >
@@ -534,9 +530,9 @@ export default function StudentFeedbackPage({
               </p>
               <button
                 onClick={() => setBatchConfirmed(true)}
-                className="w-full py-3 px-6 bg-light-highlight dark:bg-dark-highlight text-white font-semibold rounded-xl
-                           hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-main focus:ring-offset-2
-                           transition-all shadow-md hover:shadow-xl"
+                className="w-full py-3 px-6 bg-light-highlight dark:bg-dark-highlight text-white font-semibold rounded-lg
+                           hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-main/20
+                           transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 Continue to Feedback Form
               </button>
@@ -571,9 +567,6 @@ export default function StudentFeedbackPage({
   return (
     <div className="min-h-screen bg-light-muted-background dark:bg-dark-background px-4 sm:px-6 lg:px-8 py-6 md:py-8">
       {/* {showSuccessModal && <SuccessModal />} */}
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
       <div className="max-w-7xl mx-auto">
         {" "}
         {/* Removed redundant px/py here, handled by parent */}
