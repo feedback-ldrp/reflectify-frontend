@@ -72,7 +72,8 @@ export default function StudentFeedbackPage({
   const [responses, setResponses] = useState<Record<string, ResponseValue>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [selectedBatch, setSelectedBatch] = useState<string | null>(null);
+  const [selectedBatches, setSelectedBatches] = useState<string[]>([]);
+  const [batchConfirmed, setBatchConfirmed] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [justSubmitted, setJustSubmitted] = useState(false);
   const [isExpired, setIsExpired] = useState(false);
@@ -146,7 +147,9 @@ export default function StudentFeedbackPage({
               }
             }
           } catch (submissionError) {
-            showToast.error("Submission Status Check Failed: " + submissionError);
+            showToast.error(
+              "Submission Status Check Failed: " + submissionError,
+            );
           }
 
           setForm(formData);
@@ -184,9 +187,13 @@ export default function StudentFeedbackPage({
       (question) => !question.batch || question.batch === "None",
     );
 
-    const batchQuestions = selectedBatch
-      ? form.questions.filter((question) => question.batch === selectedBatch)
-      : [];
+    const batchQuestions =
+      selectedBatches.length > 0
+        ? form.questions.filter(
+            (question) =>
+              question.batch && selectedBatches.includes(question.batch),
+          )
+        : [];
 
     const displayedQuestions = [...generalQuestions, ...batchQuestions];
 
@@ -471,37 +478,70 @@ export default function StudentFeedbackPage({
   // Check if form has batch-specific questions
   const hasBatchQuestions = availableBatches.length > 0;
 
-  if (hasBatchQuestions && !selectedBatch) {
+  // Toggle batch selection
+  const toggleBatchSelection = (batch: string) => {
+    setSelectedBatches((prev) =>
+      prev.includes(batch) ? prev.filter((b) => b !== batch) : [...prev, batch],
+    );
+  };
+
+  // Check if user can proceed (at least one batch selected if batches exist)
+  const canProceed = !hasBatchQuestions || selectedBatches.length > 0;
+
+  if (hasBatchQuestions && !batchConfirmed) {
     return (
       <div className="min-h-screen bg-light-muted-background dark:bg-dark-background flex items-center justify-center">
         <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
-        <Card className="p-10 bg-light-background dark:bg-dark-muted-background shadow-lg rounded-2xl transition-all">
-          <h2 className="text-2xl font-bold text-light-text dark:text-dark-text mb-8 text-center">
-            Select Your Batch
+        <Card className="p-10 bg-light-background dark:bg-dark-muted-background shadow-lg rounded-2xl transition-all max-w-lg">
+          <h2 className="text-2xl font-bold text-light-text dark:text-dark-text mb-4 text-center">
+            Select Your Batch(es)
           </h2>
+          <p className="text-sm text-light-muted-text dark:text-dark-muted-text mb-6 text-center">
+            If you have multiple electives, select all batches that apply to
+            you.
+          </p>
 
           <div
             className={`grid gap-4 ${
               availableBatches.length <= 2
                 ? `grid-cols-${availableBatches.length}`
-                : `grid-cols sm:grid-cols-3`
+                : `grid-cols-2 sm:grid-cols-3`
             }`}
           >
             {availableBatches.map((batch) => (
               <button
                 key={batch}
-                onClick={() => setSelectedBatch(batch as string)}
-                className="text-base flex items-center justify-center py-3 px-5 rounded-xl font-medium transition-all
-                           bg-light-highlight dark:bg-dark-highlight text-white hover:bg-primary-dark
+                onClick={() => toggleBatchSelection(batch as string)}
+                className={`text-base flex items-center justify-center py-3 px-5 rounded-xl font-medium transition-all
                            focus:outline-none focus:ring-2 focus:ring-primary-main focus:ring-offset-2
-                           disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-xl"
+                           shadow-md hover:shadow-xl ${
+                             selectedBatches.includes(batch)
+                               ? "bg-light-highlight dark:bg-dark-highlight text-white ring-2 ring-offset-2 ring-light-highlight dark:ring-dark-highlight"
+                               : "bg-light-secondary dark:bg-dark-secondary text-light-text dark:text-dark-text hover:bg-light-highlight/20 dark:hover:bg-dark-highlight/20"
+                           }`}
               >
                 Batch {batch}
               </button>
             ))}
           </div>
+
+          {selectedBatches.length > 0 && (
+            <div className="mt-6 text-center">
+              <p className="text-sm text-light-muted-text dark:text-dark-muted-text mb-4">
+                Selected: {selectedBatches.sort().join(", ")}
+              </p>
+              <button
+                onClick={() => setBatchConfirmed(true)}
+                className="w-full py-3 px-6 bg-light-highlight dark:bg-dark-highlight text-white font-semibold rounded-xl
+                           hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary-main focus:ring-offset-2
+                           transition-all shadow-md hover:shadow-xl"
+              >
+                Continue to Feedback Form
+              </button>
+            </div>
+          )}
         </Card>
       </div>
     );
@@ -518,11 +558,15 @@ export default function StudentFeedbackPage({
     )
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
-  const batchQuestions = selectedBatch
-    ? form.questions
-        .filter((question) => question.batch === selectedBatch)
-        .sort((a, b) => a.displayOrder - b.displayOrder)
-    : [];
+  const batchQuestions =
+    selectedBatches.length > 0
+      ? form.questions
+          .filter(
+            (question) =>
+              question.batch && selectedBatches.includes(question.batch),
+          )
+          .sort((a, b) => a.displayOrder - b.displayOrder)
+      : [];
 
   return (
     <div className="min-h-screen bg-light-muted-background dark:bg-dark-background px-4 sm:px-6 lg:px-8 py-6 md:py-8">
@@ -558,11 +602,11 @@ export default function StudentFeedbackPage({
                 Required fields are marked with{" "}
                 <span className="text-red-500 text-xs sm:text-sm">*</span>
               </span>
-              {selectedBatch && (
+              {selectedBatches.length > 0 && (
                 <>
                   <span>•</span>
                   <span className="font-semibold text-primary">
-                    Batch {selectedBatch}
+                    Batch(es): {selectedBatches.sort().join(", ")}
                   </span>
                 </>
               )}
@@ -570,7 +614,10 @@ export default function StudentFeedbackPage({
             <div>
               <span
                 className="text-light-highlight dark:text-dark-highlight cursor-pointer"
-                onClick={() => setSelectedBatch(null)}
+                onClick={() => {
+                  setSelectedBatches([]);
+                  setBatchConfirmed(false);
+                }}
               >
                 Not Your Batch? Click here to Change Batch
               </span>
