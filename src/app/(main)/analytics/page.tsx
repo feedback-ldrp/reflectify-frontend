@@ -14,13 +14,13 @@ import { Users, Eye, RefreshCw, Book } from "lucide-react";
 
 // Import our new components
 import {
-    useFilterDictionary,
-    useProcessedAnalytics,
-    useAnalyticsActions,
-    useAnalyticsDrillDown,
-    useSubjectDetailedAnalytics,
-    useFacultyDetailedAnalytics,
-    useDivisionDetailedAnalytics,
+  useFilterDictionary,
+  useProcessedAnalytics,
+  useAnalyticsActions,
+  useAnalyticsDrillDown,
+  useSubjectDetailedAnalytics,
+  useFacultyDetailedAnalytics,
+  useDivisionDetailedAnalytics,
 } from "@/hooks/useAnalyticsData";
 import { AnalyticsFilters } from "@/components/analytics/AnalyticsFilters";
 import { AnalyticsOverview } from "@/components/analytics/AnalyticsOverview";
@@ -38,389 +38,347 @@ import { PageLoader } from "@/components/ui/LoadingSpinner";
 
 // Import drill-down panels
 import {
-    SubjectDetailPanel,
-    FacultyDetailPanel,
-    DivisionDetailPanel,
+  SubjectDetailPanel,
+  FacultyDetailPanel,
+  DivisionDetailPanel,
 } from "@/components/analytics/panels";
 
 // Animation variants
 const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
     },
+  },
 };
 
 const AnalyticsPage: React.FC = () => {
-    // Filter state
-    const [filters, setFilters] = useState<AnalyticsFilterParams>({});
-    const [activeTab, setActiveTab] = useState<
-        "subjects" | "trends" | "performance"
-    >("trends");
+  // Filter state
+  const [filters, setFilters] = useState<AnalyticsFilterParams>({});
+  const [activeTab, setActiveTab] = useState<
+    "subjects" | "trends" | "performance"
+  >("trends");
 
-    // Data fetching
-    const {
-        data: filterDictionary,
-        isLoading: filterDictionaryLoading,
-        error: filterDictionaryError,
-    } = useFilterDictionary();
+  // Data fetching
+  const {
+    data: filterDictionary,
+    isLoading: filterDictionaryLoading,
+    error: filterDictionaryError,
+  } = useFilterDictionary();
 
-    const {
-        data: processedData,
-        rawData,
-        isLoading: analyticsDataLoading,
-        error: analyticsDataError,
-        refetch: refetchAnalyticsData,
-    } = useProcessedAnalytics(filters);
+  const {
+    data: processedData,
+    rawData,
+    isLoading: analyticsDataLoading,
+    error: analyticsDataError,
+    refetch: refetchAnalyticsData,
+  } = useProcessedAnalytics(filters);
 
-    const { invalidateAll } = useAnalyticsActions();
+  const { invalidateAll } = useAnalyticsActions();
 
-    // Drill-down state management
-    const drillDown = useAnalyticsDrillDown(filters);
+  // Drill-down state management
+  const drillDown = useAnalyticsDrillDown(filters);
 
-    // Detailed analytics data for panels
-    const {
-        data: subjectDetails,
-        isLoading: subjectDetailsLoading,
-    } = useSubjectDetailedAnalytics(drillDown.state.subjectId, {
-        academicYearId: filters.academicYearId,
-        semesterId: filters.semesterId,
-        departmentId: filters.departmentId,
+  // Detailed analytics data for panels
+  const { data: subjectDetails, isLoading: subjectDetailsLoading } =
+    useSubjectDetailedAnalytics(drillDown.state.subjectId, {
+      academicYearId: filters.academicYearId,
+      semesterId: filters.semesterId,
+      departmentId: filters.departmentId,
     });
 
-    const {
-        data: facultyDetails,
-        isLoading: facultyDetailsLoading,
-    } = useFacultyDetailedAnalytics(drillDown.state.facultyId, {
-        academicYearId: filters.academicYearId,
+  const { data: facultyDetails, isLoading: facultyDetailsLoading } =
+    useFacultyDetailedAnalytics(drillDown.state.facultyId, {
+      academicYearId: filters.academicYearId,
     });
 
-    const {
-        data: divisionDetails,
-        isLoading: divisionDetailsLoading,
-    } = useDivisionDetailedAnalytics(drillDown.state.divisionId, {
-        academicYearId: filters.academicYearId,
+  const { data: divisionDetails, isLoading: divisionDetailsLoading } =
+    useDivisionDetailedAnalytics(drillDown.state.divisionId, {
+      academicYearId: filters.academicYearId,
     });
 
-    const selectedDivisionId = filters.divisionId;
-    const isSingleDivisionSelected =
-        selectedDivisionId && typeof selectedDivisionId === "string";
+  const selectedDivisionId = filters.divisionId;
+  const isSingleDivisionSelected =
+    selectedDivisionId && typeof selectedDivisionId === "string";
 
-    // Derive the division name from the selected division ID
-    const selectedDivisionName = useMemo(() => {
-        if (isSingleDivisionSelected && rawData?.feedbackSnapshots) {
-            // Find the first snapshot that matches the selected divisionId
-            const foundSnapshot = rawData.feedbackSnapshots.find(
-                (s) => s.divisionId === selectedDivisionId
-            );
-            return foundSnapshot ? foundSnapshot.divisionName : null;
-        }
-        return null;
-    }, [
-        isSingleDivisionSelected,
-        selectedDivisionId,
-        rawData?.feedbackSnapshots,
-    ]);
-
-    // Handle filter changes
-    const handleFilterChange = (newFilters: Partial<AnalyticsFilterParams>) => {
-        setFilters((prev) => ({ ...prev, ...newFilters }));
-    };
-
-    const handleRefresh = () => {
-        refetchAnalyticsData();
-        invalidateAll();
-        showToast.success("Analytics data refreshed!");
-    };
-
-    // Loading state
-    if (filterDictionaryLoading || analyticsDataLoading) {
-        return (
-            <PageLoader
-                className="bg-light-background dark:bg-dark-background"
-                text="Loading Analytics"
-            />
-        );
+  // Derive the division name from the selected division ID
+  const selectedDivisionName = useMemo(() => {
+    if (isSingleDivisionSelected && rawData?.feedbackSnapshots) {
+      // Find the first snapshot that matches the selected divisionId
+      const foundSnapshot = rawData.feedbackSnapshots.find(
+        (s) => s.divisionId === selectedDivisionId,
+      );
+      return foundSnapshot ? foundSnapshot.divisionName : null;
     }
+    return null;
+  }, [
+    isSingleDivisionSelected,
+    selectedDivisionId,
+    rawData?.feedbackSnapshots,
+  ]);
 
-    // Error state
-    if (filterDictionaryError || analyticsDataError) {
-        return (
-            <div className="min-h-screen bg-light-muted-background dark:bg-dark-background">
-                <div className="max-w-[1920px] mx-auto px-4 sm:px-6 py-6 md:py-8">
-                    <div className="flex items-center justify-center h-64">
-                        <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                                <svg
-                                    className="w-8 h-8 text-red-500"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"
-                                    />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-light-text dark:text-dark-text mb-2">
-                                Failed to load analytics data
-                            </h3>
-                            <p className="text-light-muted-text dark:text-dark-muted-text mb-6">
-                                We encountered an error while fetching your
-                                analytics. Please try again.
-                            </p>
-                            <Button
-                                onClick={handleRefresh}
-                                className="bg-light-highlight dark:bg-dark-highlight hover:bg-primary-dark text-white"
-                            >
-                                <RefreshCw className="w-4 h-4 mr-2" />
-                                Try Again
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+  // Handle filter changes
+  const handleFilterChange = (newFilters: Partial<AnalyticsFilterParams>) => {
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+  };
 
+  const handleRefresh = () => {
+    refetchAnalyticsData();
+    invalidateAll();
+    showToast.success("Analytics data refreshed!");
+  };
+
+  // Loading state
+  if (filterDictionaryLoading || analyticsDataLoading) {
     return (
-        <div className="h-screen bg-light-muted-background dark:bg-dark-background flex overflow-hidden">
-            {/* Main Content Area - Shrinks when panel is open */}
-            <div className="flex-1 min-w-0 overflow-y-auto">
-                <div className="max-w-[1920px] mx-auto px-6 py-6">
-                    <motion.div
-                        initial="hidden"
-                        animate="visible"
-                        variants={containerVariants}
-                        className="space-y-4"
+      <PageLoader
+        className="bg-light-background dark:bg-dark-background"
+        text="Loading Analytics"
+      />
+    );
+  }
+
+  // Error state
+  if (filterDictionaryError || analyticsDataError) {
+    return (
+      <div className="min-h-screen bg-light-muted-background dark:bg-dark-background">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 py-6 md:py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-red-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-light-text dark:text-dark-text mb-2">
+                Failed to load analytics data
+              </h3>
+              <p className="text-light-muted-text dark:text-dark-muted-text mb-6">
+                We encountered an error while fetching your analytics. Please
+                try again.
+              </p>
+              <Button
+                onClick={handleRefresh}
+                className="bg-light-highlight dark:bg-dark-highlight hover:bg-primary-dark text-white"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Try Again
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-screen bg-light-muted-background dark:bg-dark-background flex overflow-hidden">
+      {/* Main Content Area - Shrinks when panel is open */}
+      <div className="flex-1 min-w-0 overflow-y-auto">
+        <div className="max-w-[1920px] mx-auto px-6 py-6">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+            className="space-y-4"
+          >
+            {/* Header */}
+            <motion.div className="bg-light-background dark:bg-dark-muted-background p-6 rounded-xl shadow-sm border border-light-secondary dark:border-dark-secondary">
+              <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                {/* Left Section: Title and Descriptions */}
+                <div>
+                  {/* Responsive text sizing */}
+                  <h1 className="text-3xl md:text-4xl font-extrabold text-light-text dark:text-dark-text flex items-center gap-3">
+                    Analytics Dashboard
+                  </h1>
+                  <p className="text-base text-light-muted-text dark:text-dark-muted-text flex items-center gap-2 mt-2">
+                    <ArrowTrendingUpIcon className="h-6 w-6 text-positive-main" />
+                    Comprehensive feedback analytics and insights
+                  </p>
+                </div>
+
+                {/* Right Section: Response Count and Last Updated */}
+                {/* Full width on small screens, auto width and right aligned on sm and up */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleRefresh}
+                    disabled={analyticsDataLoading}
+                    className="flex items-center gap-1.5 py-2.5 px-4 text-light-text dark:text-dark-text bg-light-secondary dark:bg-dark-secondary rounded-xl hover:bg-light-hover hover:dark:bg-dark-hover transition-colors"
+                    title="Refresh Feedback Forms"
+                  >
+                    <RefreshCw
+                      className={`w-5 h-5 ${
+                        analyticsDataLoading ? "animate-spin" : ""
+                      }`}
+                    />
+                    {analyticsDataLoading ? "Refreshing ..." : "Refresh Data"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Filters */}
+            <Card className="bg-light-background dark:bg-dark-muted-background border border-light-secondary dark:border-dark-secondary rounded-2xl shadow-sm">
+              <AnalyticsFilters
+                filters={filters}
+                filterDictionary={filterDictionary}
+                onFiltersChange={handleFilterChange}
+                onRefresh={handleRefresh}
+                isLoading={analyticsDataLoading}
+              />
+            </Card>
+
+            {/* Overview Stats */}
+            <AnalyticsOverview
+              stats={processedData?.overallStats || null}
+              isLoading={analyticsDataLoading}
+            />
+
+            {/* Main Content */}
+            <div className="bg-light-background dark:bg-dark-muted-background border border-light-secondary dark:border-dark-secondary rounded-2xl shadow-sm">
+              <Tabs
+                value={activeTab}
+                onValueChange={(value: string) => setActiveTab(value as any)}
+              >
+                <div className="p-4 border-b border-light-secondary dark:border-dark-secondary">
+                  <TabsList className="grid w-full grid-cols-3 gap-4 rounded-xl p-1">
+                    <TabsTrigger
+                      value="trends"
+                      className="flex items-center gap-2 text-md"
                     >
-                        {/* Header */}
-                        <motion.div className="bg-light-background dark:bg-dark-muted-background p-6 rounded-xl shadow-sm border border-light-secondary dark:border-dark-secondary">
-                            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                {/* Left Section: Title and Descriptions */}
-                                <div>
-                                    {/* Responsive text sizing */}
-                                    <h1 className="text-3xl md:text-4xl font-extrabold text-light-text dark:text-dark-text flex items-center gap-3">
-                                        Analytics Dashboard
-                                    </h1>
-                                    <p className="text-base text-light-muted-text dark:text-dark-muted-text flex items-center gap-2 mt-2">
-                                        <ArrowTrendingUpIcon className="h-6 w-6 text-positive-main" />
-                                        Comprehensive feedback analytics and
-                                        insights
-                                    </p>
-                                </div>
+                      <Eye className="w-6 h-6" />
+                      Yearly Trends
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="subjects"
+                      className="flex items-center gap-2 text-md"
+                    >
+                      <Book className="w-6 h-6" />
+                      Subjects & Ratings
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="performance"
+                      className="flex items-center gap-2 text-md"
+                    >
+                      <Users className="w-6 h-6" />
+                      Faculty Performance
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
 
-                            {/* Right Section: Response Count and Last Updated */}
-                            {/* Full width on small screens, auto width and right aligned on sm and up */}
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={handleRefresh}
-                                    disabled={analyticsDataLoading}
-                                    className="flex items-center gap-1.5 py-2.5 px-4 text-light-text dark:text-dark-text bg-light-secondary dark:bg-dark-secondary rounded-xl hover:bg-light-hover hover:dark:bg-dark-hover transition-colors"
-                                    title="Refresh Feedback Forms"
-                                >
-                                    <RefreshCw
-                                        className={`w-5 h-5 ${
-                                            analyticsDataLoading
-                                                ? "animate-spin"
-                                                : ""
-                                        }`}
-                                    />
-                                    {analyticsDataLoading
-                                        ? "Refreshing ..."
-                                        : "Refresh Data"}
-                                </button>
-                            </div>
-                        </div>
-                    </motion.div>
+                <div className="p-6">
+                  <TabsContent value="subjects" className="space-y-6 mt-0">
+                    <SubjectRatingsChart
+                      data={processedData?.subjectRatings || []}
+                      isLoading={analyticsDataLoading}
+                      onSubjectClick={(subjectId, subjectName) => {
+                        drillDown.openSubjectPanel(subjectId, subjectName);
+                      }}
+                    />
+                    <SubjectFacultyPerformanceChart
+                      data={processedData?.subjectFacultyPerformance || []}
+                      isLoading={analyticsDataLoading}
+                    />
+                  </TabsContent>
 
-                    {/* Filters */}
-                    <Card className="bg-light-background dark:bg-dark-muted-background border border-light-secondary dark:border-dark-secondary rounded-2xl shadow-sm">
-                        <AnalyticsFilters
-                            filters={filters}
-                            filterDictionary={filterDictionary}
-                            onFiltersChange={handleFilterChange}
-                            onRefresh={handleRefresh}
-                            isLoading={analyticsDataLoading}
-                        />
-                    </Card>
-
-                    {/* Overview Stats */}
-                    <AnalyticsOverview
-                        stats={processedData?.overallStats || null}
-                        isLoading={analyticsDataLoading}
+                  <TabsContent value="trends" className="space-y-6 mt-0">
+                    <AcademicYearDepartmentComparisonChart
+                      data={processedData?.academicYearDepartmentTrends || []}
+                      isLoading={analyticsDataLoading}
+                    />
+                    <AcademicYearSemesterPerformanceChart
+                      data={processedData?.academicYearSemesterTrends || []}
+                      isLoading={analyticsDataLoading}
+                    />
+                    <AcademicYearDivisionPerformanceChart
+                      data={
+                        processedData?.academicYearDivisionPerformance || []
+                      }
+                      isLoading={analyticsDataLoading}
                     />
 
-                    {/* Main Content */}
-                    <div className="bg-light-background dark:bg-dark-muted-background border border-light-secondary dark:border-dark-secondary rounded-2xl shadow-sm">
-                        <Tabs
-                            value={activeTab}
-                            onValueChange={(value: string) =>
-                                setActiveTab(value as any)
-                            }
-                        >
-                            <div className="p-4 border-b border-light-secondary dark:border-dark-secondary">
-                                <TabsList className="grid w-full grid-cols-3 gap-4 rounded-xl p-1">
-                                    <TabsTrigger
-                                        value="trends"
-                                        className="flex items-center gap-2 text-md"
-                                    >
-                                        <Eye className="w-6 h-6" />
-                                        Yearly Trends
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value="subjects"
-                                        className="flex items-center gap-2 text-md"
-                                    >
-                                        <Book className="w-6 h-6" />
-                                        Subjects & Ratings
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value="performance"
-                                        className="flex items-center gap-2 text-md"
-                                    >
-                                        <Users className="w-6 h-6" />
-                                        Faculty Performance
-                                    </TabsTrigger>
-                                </TabsList>
-                            </div>
+                    <BatchComparisonChart
+                      data={processedData?.batchComparisons || []}
+                      selectedDivisionName={selectedDivisionName} // Pass the derived name here
+                      isLoading={analyticsDataLoading}
+                    />
+                  </TabsContent>
 
-                            <div className="p-6">
-                                <TabsContent
-                                    value="subjects"
-                                    className="space-y-6 mt-0"
-                                >
-                                    <SubjectRatingsChart
-                                        data={
-                                            processedData?.subjectRatings || []
-                                        }
-                                        isLoading={analyticsDataLoading}
-                                        onSubjectClick={(subjectId, subjectName) => {
-                                            drillDown.openSubjectPanel(subjectId, subjectName);
-                                        }}
-                                    />
-                                    <SubjectFacultyPerformanceChart
-                                        data={
-                                            processedData?.subjectFacultyPerformance ||
-                                            []
-                                        }
-                                        isLoading={analyticsDataLoading}
-                                    />
-                                </TabsContent>
-
-                                <TabsContent
-                                    value="trends"
-                                    className="space-y-6 mt-0"
-                                >
-                                    <AcademicYearDepartmentComparisonChart
-                                        data={
-                                            processedData?.academicYearDepartmentTrends ||
-                                            []
-                                        }
-                                        isLoading={analyticsDataLoading}
-                                    />
-                                    <AcademicYearSemesterPerformanceChart
-                                        data={
-                                            processedData?.academicYearSemesterTrends ||
-                                            []
-                                        }
-                                        isLoading={analyticsDataLoading}
-                                    />
-                                    <AcademicYearDivisionPerformanceChart
-                                        data={
-                                            processedData?.academicYearDivisionPerformance ||
-                                            []
-                                        }
-                                        isLoading={analyticsDataLoading}
-                                    />
-
-                                    <BatchComparisonChart
-                                        data={
-                                            processedData?.batchComparisons ||
-                                            []
-                                        }
-                                        selectedDivisionName={
-                                            selectedDivisionName
-                                        } // Pass the derived name here
-                                        isLoading={analyticsDataLoading}
-                                    />
-                                </TabsContent>
-
-                                <TabsContent
-                                    value="performance"
-                                    className="space-y-6 mt-0"
-                                >
-                                    <FacultyPerformanceChart
-                                        data={
-                                            processedData?.facultyPerformance ||
-                                            []
-                                        }
-                                        academicYearId={filters.academicYearId}
-                                        onFacultyClick={(facultyId, facultyName) => {
-                                            drillDown.openFacultyPanel(facultyId, facultyName);
-                                        }}
-                                    />
-                                </TabsContent>
-                            </div>
-                        </Tabs>
-                    </div>
-                </motion.div>
+                  <TabsContent value="performance" className="space-y-6 mt-0">
+                    <FacultyPerformanceChart
+                      data={processedData?.facultyPerformance || []}
+                      academicYearId={filters.academicYearId}
+                      onFacultyClick={(facultyId, facultyName) => {
+                        drillDown.openFacultyPanel(facultyId, facultyName);
+                      }}
+                    />
+                  </TabsContent>
                 </div>
+              </Tabs>
             </div>
-
-            {/* Drill-down Panels - Inline Flex, Resizable */}
-            <SubjectDetailPanel
-                isOpen={drillDown.isSubjectPanelOpen}
-                onClose={drillDown.closePanel}
-                subjectName={drillDown.state.subjectName || "Subject Details"}
-                data={subjectDetails || null}
-                isLoading={subjectDetailsLoading}
-                onFacultyClick={(facultyId, facultyName) => {
-                    drillDown.navigateToFaculty(facultyId, facultyName);
-                }}
-                onDivisionClick={(divisionId, divisionName) => {
-                    drillDown.navigateToDivision(divisionId, divisionName);
-                }}
-                inline
-            />
-
-            <FacultyDetailPanel
-                isOpen={drillDown.isFacultyPanelOpen}
-                onClose={drillDown.closePanel}
-                facultyName={drillDown.state.facultyName || "Faculty Details"}
-                data={facultyDetails || null}
-                isLoading={facultyDetailsLoading}
-                onSubjectClick={(subjectId, subjectName) => {
-                    drillDown.navigateToSubject(subjectId, subjectName);
-                }}
-                onDivisionClick={(divisionId, divisionName) => {
-                    drillDown.navigateToDivision(divisionId, divisionName);
-                }}
-                inline
-            />
-
-            <DivisionDetailPanel
-                isOpen={drillDown.isDivisionPanelOpen}
-                onClose={drillDown.closePanel}
-                divisionName={drillDown.state.divisionName || "Division Details"}
-                data={divisionDetails || null}
-                isLoading={divisionDetailsLoading}
-                onFacultyClick={(facultyId, facultyName) => {
-                    drillDown.navigateToFaculty(facultyId, facultyName);
-                }}
-                onSubjectClick={(subjectId, subjectName) => {
-                    drillDown.navigateToSubject(subjectId, subjectName);
-                }}
-                inline
-            />
+          </motion.div>
         </div>
-    );
+      </div>
+
+      {/* Drill-down Panels - Inline Flex, Resizable */}
+      <SubjectDetailPanel
+        isOpen={drillDown.isSubjectPanelOpen}
+        onClose={drillDown.closePanel}
+        subjectName={drillDown.state.subjectName || "Subject Details"}
+        data={subjectDetails || null}
+        isLoading={subjectDetailsLoading}
+        onFacultyClick={(facultyId, facultyName) => {
+          drillDown.navigateToFaculty(facultyId, facultyName);
+        }}
+        onDivisionClick={(divisionId, divisionName) => {
+          drillDown.navigateToDivision(divisionId, divisionName);
+        }}
+        inline
+      />
+
+      <FacultyDetailPanel
+        isOpen={drillDown.isFacultyPanelOpen}
+        onClose={drillDown.closePanel}
+        facultyName={drillDown.state.facultyName || "Faculty Details"}
+        data={facultyDetails || null}
+        isLoading={facultyDetailsLoading}
+        onSubjectClick={(subjectId, subjectName) => {
+          drillDown.navigateToSubject(subjectId, subjectName);
+        }}
+        onDivisionClick={(divisionId, divisionName) => {
+          drillDown.navigateToDivision(divisionId, divisionName);
+        }}
+        inline
+      />
+
+      <DivisionDetailPanel
+        isOpen={drillDown.isDivisionPanelOpen}
+        onClose={drillDown.closePanel}
+        divisionName={drillDown.state.divisionName || "Division Details"}
+        data={divisionDetails || null}
+        isLoading={divisionDetailsLoading}
+        onFacultyClick={(facultyId, facultyName) => {
+          drillDown.navigateToFaculty(facultyId, facultyName);
+        }}
+        onSubjectClick={(subjectId, subjectName) => {
+          drillDown.navigateToSubject(subjectId, subjectName);
+        }}
+        inline
+      />
+    </div>
+  );
 };
 
 export default AnalyticsPage;

@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { X, FileSpreadsheet, FileText, GripVertical, ChevronRight } from "lucide-react";
+import {
+  X,
+  FileSpreadsheet,
+  FileText,
+  GripVertical,
+  ChevronRight,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -49,7 +55,9 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
   inline = false,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
-  const [panelWidth, setPanelWidth] = useState(defaultWidth || widthClasses[width]);
+  const [panelWidth, setPanelWidth] = useState(
+    defaultWidth || widthClasses[width],
+  );
   const [isResizing, setIsResizing] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const startXRef = useRef(0);
@@ -69,25 +77,28 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
   }, [isOpen, defaultWidth, width]);
 
   // Handle resize
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsResizing(true);
-    startXRef.current = e.clientX;
-    startWidthRef.current = panelWidth;
-  }, [panelWidth]);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsResizing(true);
+      startXRef.current = e.clientX;
+      startWidthRef.current = panelWidth;
+    },
+    [panelWidth],
+  );
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing) return;
-      
+
       // Calculate new width (resize from left edge, so subtract delta)
       const delta = startXRef.current - e.clientX;
       const newWidth = Math.min(
         Math.max(startWidthRef.current + delta, minWidth),
-        Math.min(maxWidth, window.innerWidth * 0.6)
+        Math.min(maxWidth, window.innerWidth * 0.6),
       );
-      
+
       setPanelWidth(newWidth);
     };
 
@@ -125,7 +136,7 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
   // For modal mode: Handle click outside
   useEffect(() => {
     if (inline) return; // Skip for inline mode
-    
+
     const handleClickOutside = (e: MouseEvent) => {
       if (
         panelRef.current &&
@@ -151,7 +162,7 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
   // For modal mode: Prevent body scroll when panel is open
   useEffect(() => {
     if (inline) return; // Skip for inline mode
-    
+
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -170,9 +181,9 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
           <motion.div
             ref={panelRef}
             initial={{ width: 0, opacity: 0 }}
-            animate={{ 
-              width: isCollapsed ? 48 : panelWidth, 
-              opacity: 1 
+            animate={{
+              width: isCollapsed ? 48 : panelWidth,
+              opacity: 1,
             }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -180,7 +191,7 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
               "relative h-full flex-shrink-0",
               "bg-light-background dark:bg-dark-muted-background",
               "border-l border-light-secondary dark:border-dark-secondary",
-              "flex flex-col overflow-hidden"
+              "flex flex-col overflow-hidden",
             )}
           >
             {/* Resize Handle */}
@@ -190,17 +201,19 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
                 className={cn(
                   "absolute left-0 top-0 bottom-0 w-1 cursor-ew-resize group z-10",
                   "hover:bg-primary-main/30 transition-colors",
-                  isResizing && "bg-primary-main/50"
+                  isResizing && "bg-primary-main/50",
                 )}
               >
-                <div className={cn(
-                  "absolute left-0 top-1/2 -translate-y-1/2 w-4 h-10 -ml-2",
-                  "flex items-center justify-center rounded-l-md",
-                  "bg-light-secondary dark:bg-dark-secondary",
-                  "border border-r-0 border-light-tertiary dark:border-dark-tertiary",
-                  "opacity-0 group-hover:opacity-100 transition-opacity",
-                  isResizing && "opacity-100"
-                )}>
+                <div
+                  className={cn(
+                    "absolute left-0 top-1/2 -translate-y-1/2 w-4 h-10 -ml-2",
+                    "flex items-center justify-center rounded-l-md",
+                    "bg-light-secondary dark:bg-dark-secondary",
+                    "border border-r-0 border-light-tertiary dark:border-dark-tertiary",
+                    "opacity-0 group-hover:opacity-100 transition-opacity",
+                    isResizing && "opacity-100",
+                  )}
+                >
                   <GripVertical className="w-3 h-3 text-light-muted-text dark:text-dark-muted-text" />
                 </div>
               </div>
@@ -217,9 +230,12 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
                   <ChevronRight className="w-5 h-5 text-light-muted-text dark:text-dark-muted-text rotate-180" />
                 </button>
                 <div className="flex-1 flex items-center justify-center">
-                  <span 
+                  <span
                     className="text-xs font-medium text-light-muted-text dark:text-dark-muted-text whitespace-nowrap origin-center"
-                    style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                    style={{
+                      writingMode: "vertical-rl",
+                      transform: "rotate(180deg)",
+                    }}
                   >
                     {title}
                   </span>
@@ -316,7 +332,7 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
       <div
         className={cn(
           "fixed inset-0 bg-black/50 z-40 transition-opacity duration-300",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
         aria-hidden="true"
       />
@@ -330,7 +346,7 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
           "bg-light-background dark:bg-dark-muted-background shadow-2xl",
           "transform transition-transform duration-300 ease-out",
           "flex flex-col max-w-[90vw]",
-          isOpen ? "translate-x-0" : "translate-x-full"
+          isOpen ? "translate-x-0" : "translate-x-full",
         )}
         role="dialog"
         aria-modal="true"
@@ -343,17 +359,19 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
             className={cn(
               "absolute left-0 top-0 bottom-0 w-1.5 cursor-ew-resize group z-10",
               "hover:bg-primary-main/20 transition-colors",
-              isResizing && "bg-primary-main/30"
+              isResizing && "bg-primary-main/30",
             )}
           >
-            <div className={cn(
-              "absolute left-0 top-1/2 -translate-y-1/2 w-4 h-12 -ml-1.5",
-              "flex items-center justify-center rounded-l-md",
-              "bg-light-secondary dark:bg-dark-secondary",
-              "border border-r-0 border-light-tertiary dark:border-dark-tertiary",
-              "opacity-0 group-hover:opacity-100 transition-opacity",
-              isResizing && "opacity-100"
-            )}>
+            <div
+              className={cn(
+                "absolute left-0 top-1/2 -translate-y-1/2 w-4 h-12 -ml-1.5",
+                "flex items-center justify-center rounded-l-md",
+                "bg-light-secondary dark:bg-dark-secondary",
+                "border border-r-0 border-light-tertiary dark:border-dark-tertiary",
+                "opacity-0 group-hover:opacity-100 transition-opacity",
+                isResizing && "opacity-100",
+              )}
+            >
               <GripVertical className="w-3 h-3 text-light-muted-text dark:text-dark-muted-text" />
             </div>
           </div>
@@ -370,7 +388,9 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
                 {title}
               </h2>
               {subtitle && (
-                <p className="mt-1 text-sm text-light-muted-text dark:text-dark-muted-text truncate">{subtitle}</p>
+                <p className="mt-1 text-sm text-light-muted-text dark:text-dark-muted-text truncate">
+                  {subtitle}
+                </p>
               )}
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -417,11 +437,7 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          {isLoading ? (
-            <DrillDownPanelSkeleton />
-          ) : (
-            children
-          )}
+          {isLoading ? <DrillDownPanelSkeleton /> : children}
         </div>
       </div>
     </>
@@ -494,13 +510,19 @@ export const DrillDownSection: React.FC<DrillDownSectionProps> = ({
         className="w-full flex items-center justify-between px-4 py-3 bg-light-muted-background dark:bg-dark-noisy-background hover:bg-light-secondary dark:hover:bg-dark-secondary transition-colors"
       >
         <div className="flex items-center gap-2">
-          {icon && <span className="text-light-muted-text dark:text-dark-muted-text">{icon}</span>}
-          <span className="font-medium text-light-text dark:text-dark-text">{title}</span>
+          {icon && (
+            <span className="text-light-muted-text dark:text-dark-muted-text">
+              {icon}
+            </span>
+          )}
+          <span className="font-medium text-light-text dark:text-dark-text">
+            {title}
+          </span>
         </div>
         <svg
           className={cn(
             "w-5 h-5 text-light-muted-text dark:text-dark-muted-text transition-transform",
-            isOpen ? "rotate-180" : ""
+            isOpen ? "rotate-180" : "",
           )}
           fill="none"
           viewBox="0 0 24 24"
@@ -574,7 +596,7 @@ export const RatingBadge: React.FC<RatingBadgeProps> = ({
       className={cn(
         "inline-flex items-center font-semibold rounded-full",
         getColorClass(rating),
-        sizeClasses[size]
+        sizeClasses[size],
       )}
     >
       {rating.toFixed(2)}
