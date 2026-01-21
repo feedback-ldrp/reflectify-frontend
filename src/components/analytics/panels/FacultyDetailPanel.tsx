@@ -1,13 +1,15 @@
 "use client";
 
 import React from "react";
-import { BookOpen, Building2, MessageSquare, TrendingUp, Trophy } from "lucide-react";
-import { FacultyDetailedAnalytics } from "@/services/analyticsService";
 import {
-  DrillDownPanel,
-  DrillDownSection,
-  StatCard,
-} from "../DrillDownPanel";
+  BookOpen,
+  Building2,
+  MessageSquare,
+  TrendingUp,
+  Trophy,
+} from "lucide-react";
+import { FacultyDetailedAnalytics } from "@/services/analyticsService";
+import { DrillDownPanel, DrillDownSection, StatCard } from "../DrillDownPanel";
 import { DetailTable, columnRenderers } from "../DetailTable";
 import { exportFacultyDetails } from "@/utils/analyticsExport";
 
@@ -30,7 +32,6 @@ export const FacultyDetailPanel: React.FC<FacultyDetailPanelProps> = ({
   onSubjectClick,
   onDivisionClick,
 }) => {
-
   const handleExportCSV = () => {
     if (!data) return;
     const csvData = data.subjectBreakdown.map((s) => ({
@@ -41,15 +42,15 @@ export const FacultyDetailPanel: React.FC<FacultyDetailPanelProps> = ({
       Semester: s.semester,
       "Academic Year": s.academicYear,
     }));
-    
+
     const headers = Object.keys(csvData[0]).join(",");
     const rows = csvData.map((row) =>
       Object.values(row)
         .map((v) => `"${v}"`)
-        .join(",")
+        .join(","),
     );
     const csv = [headers, ...rows].join("\n");
-    
+
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -71,7 +72,7 @@ export const FacultyDetailPanel: React.FC<FacultyDetailPanelProps> = ({
         subjectBreakdown: data.subjectBreakdown,
         divisionBreakdown: data.divisionBreakdown,
       },
-      `${facultyName.replace(/\s+/g, "_")}_Analytics`
+      `${facultyName.replace(/\s+/g, "_")}_Analytics`,
     );
   };
 
@@ -218,8 +219,8 @@ export const FacultyDetailPanel: React.FC<FacultyDetailPanelProps> = ({
   const getRankBadgeColor = (rank: number, total: number) => {
     const percentile = ((total - rank + 1) / total) * 100;
     if (percentile >= 90) return "bg-yellow-100 text-yellow-800"; // Top 10%
-    if (percentile >= 75) return "bg-green-100 text-green-800";   // Top 25%
-    if (percentile >= 50) return "bg-blue-100 text-blue-800";     // Top 50%
+    if (percentile >= 75) return "bg-green-100 text-green-800"; // Top 25%
+    if (percentile >= 50) return "bg-blue-100 text-blue-800"; // Top 50%
     return "bg-gray-100 text-gray-700";
   };
 
@@ -249,18 +250,22 @@ export const FacultyDetailPanel: React.FC<FacultyDetailPanelProps> = ({
               subtext={`${data.totalResponses} responses`}
               colorClass="bg-blue-50 text-blue-700"
             />
-            <div className={`p-4 rounded-lg ${getRankBadgeColor(data.rank, data.totalFaculty)}`}>
+            <div
+              className={`p-4 rounded-lg ${getRankBadgeColor(data.rank, data.totalFaculty)}`}
+            >
               <div className="flex items-center gap-2 mb-1">
                 <Trophy className="w-4 h-4" />
                 <p className="text-sm font-medium opacity-80">Rank</p>
               </div>
               <p className="text-2xl font-bold">#{data.rank}</p>
-              <p className="text-xs mt-1 opacity-70">of {data.totalFaculty} faculty</p>
+              <p className="text-xs mt-1 opacity-70">
+                of {data.totalFaculty} faculty
+              </p>
             </div>
             <StatCard
               label="Subjects Taught"
               value={data.subjectBreakdown.length}
-              subtext={`${new Set(data.divisionBreakdown.map(d => d.divisionId)).size} divisions`}
+              subtext={`${new Set(data.divisionBreakdown.map((d) => d.divisionId)).size} divisions`}
               colorClass="bg-purple-50 text-purple-700"
             />
           </div>

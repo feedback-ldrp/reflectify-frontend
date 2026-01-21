@@ -3,11 +3,7 @@
 import React from "react";
 import { Users, BookOpen, Calendar } from "lucide-react";
 import { DivisionDetailedAnalytics } from "@/services/analyticsService";
-import {
-  DrillDownPanel,
-  DrillDownSection,
-  StatCard,
-} from "../DrillDownPanel";
+import { DrillDownPanel, DrillDownSection, StatCard } from "../DrillDownPanel";
 import { DetailTable, columnRenderers } from "../DetailTable";
 import { exportDivisionDetails } from "@/utils/analyticsExport";
 
@@ -30,7 +26,6 @@ export const DivisionDetailPanel: React.FC<DivisionDetailPanelProps> = ({
   onFacultyClick,
   onSubjectClick,
 }) => {
-
   const handleExportCSV = () => {
     if (!data) return;
     const csvData = data.facultyBreakdown.map((f) => ({
@@ -40,15 +35,15 @@ export const DivisionDetailPanel: React.FC<DivisionDetailPanelProps> = ({
       Rating: f.rating,
       Responses: f.responses,
     }));
-    
+
     const headers = Object.keys(csvData[0]).join(",");
     const rows = csvData.map((row) =>
       Object.values(row)
         .map((v) => `"${v}"`)
-        .join(",")
+        .join(","),
     );
     const csv = [headers, ...rows].join("\n");
-    
+
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -68,7 +63,7 @@ export const DivisionDetailPanel: React.FC<DivisionDetailPanelProps> = ({
         facultyBreakdown: data.facultyBreakdown,
         subjectBreakdown: data.subjectBreakdown,
       },
-      `${divisionName.replace(/\s+/g, "_")}_Analytics`
+      `${divisionName.replace(/\s+/g, "_")}_Analytics`,
     );
   };
 
@@ -203,7 +198,11 @@ export const DivisionDetailPanel: React.FC<DivisionDetailPanelProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title={divisionName}
-      subtitle={data ? `${data.division.departmentName} • Semester ${data.division.semesterNumber}` : undefined}
+      subtitle={
+        data
+          ? `${data.division.departmentName} • Semester ${data.division.semesterNumber}`
+          : undefined
+      }
       width="lg"
       isLoading={isLoading}
       onExportCSV={handleExportCSV}
@@ -226,7 +225,9 @@ export const DivisionDetailPanel: React.FC<DivisionDetailPanelProps> = ({
             />
             <StatCard
               label="Faculty Count"
-              value={new Set(data.facultyBreakdown.map(f => f.facultyId)).size}
+              value={
+                new Set(data.facultyBreakdown.map((f) => f.facultyId)).size
+              }
               colorClass="bg-purple-50 text-purple-700"
             />
             <StatCard

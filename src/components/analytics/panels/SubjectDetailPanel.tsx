@@ -3,11 +3,7 @@
 import React from "react";
 import { Users, Building2, MessageSquare } from "lucide-react";
 import { SubjectDetailedAnalytics } from "@/services/analyticsService";
-import {
-  DrillDownPanel,
-  DrillDownSection,
-  StatCard,
-} from "../DrillDownPanel";
+import { DrillDownPanel, DrillDownSection, StatCard } from "../DrillDownPanel";
 import { DetailTable, columnRenderers } from "../DetailTable";
 import { exportSubjectDetails } from "@/utils/analyticsExport";
 
@@ -30,7 +26,6 @@ export const SubjectDetailPanel: React.FC<SubjectDetailPanelProps> = ({
   onFacultyClick,
   onDivisionClick,
 }) => {
-
   const handleExportCSV = () => {
     if (!data) return;
     // Simple CSV export of faculty breakdown
@@ -41,15 +36,15 @@ export const SubjectDetailPanel: React.FC<SubjectDetailPanelProps> = ({
       Responses: f.responses,
       Divisions: f.divisions.join(", "),
     }));
-    
+
     const headers = Object.keys(csvData[0]).join(",");
     const rows = csvData.map((row) =>
       Object.values(row)
         .map((v) => `"${v}"`)
-        .join(",")
+        .join(","),
     );
     const csv = [headers, ...rows].join("\n");
-    
+
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -69,7 +64,7 @@ export const SubjectDetailPanel: React.FC<SubjectDetailPanelProps> = ({
         facultyBreakdown: data.facultyBreakdown,
         divisionBreakdown: data.divisionBreakdown,
       },
-      `${subjectName.replace(/\s+/g, "_")}_Analytics`
+      `${subjectName.replace(/\s+/g, "_")}_Analytics`,
     );
   };
 
