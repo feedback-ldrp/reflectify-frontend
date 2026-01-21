@@ -23,6 +23,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  TrendingUp,
 } from "lucide-react";
 
 interface NavItem {
@@ -50,6 +51,12 @@ const navGroups: NavGroup[] = [
         label: "Analytics",
         href: "/analytics",
         icon: BarChart3,
+        requiredSuper: true,
+      },
+      {
+        label: "Trends",
+        href: "/trends",
+        icon: TrendingUp,
         requiredSuper: true,
       },
     ],

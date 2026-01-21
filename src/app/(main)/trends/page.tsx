@@ -1,6 +1,6 @@
 /**
- * @file src/app/(main)/executive/page.tsx
- * @description Executive Analytics Command Center - Premium dashboard for decision makers
+ * @file src/app/(main)/trends/page.tsx
+ * @description Trends Analytics Dashboard - Visual insights and performance trends
  * @aesthetics Aligned with project design system (primary orange, semantic colors)
  * @phase3 Interactive Features: Drill-down, Export, Enhanced Filters
  */
@@ -631,8 +631,8 @@ const PerformersTable: React.FC<{
   );
 };
 
-// Main Executive Dashboard Component
-const ExecutiveDashboard: React.FC = () => {
+// Main Trends Dashboard Component
+const TrendsDashboard: React.FC = () => {
   const router = useRouter();
   const [filters, setFilters] = useState<AnalyticsFilterParams>({});
   const [showFilters, setShowFilters] = useState(false);
@@ -1120,9 +1120,9 @@ const ExecutiveDashboard: React.FC = () => {
 
     exportToCSV(
       summaryData,
-      `Executive_Summary_${new Date().toISOString().split("T")[0]}`,
+      `Trends_Summary_${new Date().toISOString().split("T")[0]}`,
     );
-    showToast.success("Executive summary exported to CSV");
+    showToast.success("Trends summary exported to CSV");
     setShowExportMenu(false);
   }, [metrics]);
 
@@ -1227,9 +1227,9 @@ const ExecutiveDashboard: React.FC = () => {
 
       await exportToExcelMultiSheet(
         sheets,
-        `Executive_Dashboard_Report_${new Date().toISOString().split("T")[0]}`,
+        `Trends_Report_${new Date().toISOString().split("T")[0]}`,
       );
-      showToast.success("Executive report exported to Excel");
+      showToast.success("Trends report exported to Excel");
       setShowExportMenu(false);
     } catch (error) {
       showToast.error("Failed to export report");
@@ -1266,7 +1266,7 @@ const ExecutiveDashboard: React.FC = () => {
   const isLoading = filterLoading || analyticsLoading;
 
   if (isLoading) {
-    return <PageLoader text="Loading Executive Dashboard" />;
+    return <PageLoader text="Loading Trends" />;
   }
 
   return (
@@ -1288,7 +1288,7 @@ const ExecutiveDashboard: React.FC = () => {
                 <div>
                   <h1 className="text-2xl md:text-3xl font-bold text-light-text dark:text-dark-text flex items-center gap-3">
                     <BarChart3 className="h-7 w-7 text-primary-main" />
-                    Executive Dashboard
+                    Trends
                   </h1>
                   <p className="text-sm text-light-muted-text dark:text-dark-muted-text flex items-center gap-2 mt-2">
                     <ArrowTrendingUpIcon className="h-4 w-4 text-positive-main" />
@@ -1989,4 +1989,4 @@ const ExecutiveDashboard: React.FC = () => {
   );
 };
 
-export default ExecutiveDashboard;
+export default TrendsDashboard;

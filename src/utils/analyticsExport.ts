@@ -51,8 +51,10 @@ export async function exportToExcel<T extends Record<string, any>>(
     return;
   }
 
-  // Dynamically import xlsx library
-  const XLSX = await import("xlsx");
+  // Dynamically import exceljs library
+  const ExcelJS = await import("exceljs");
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet(sheetName);
 
   // Determine columns from first row if not provided
   const exportColumns = columns || Object.keys(data[0]).map((key) => ({
@@ -60,32 +62,56 @@ export async function exportToExcel<T extends Record<string, any>>(
     header: formatHeaderFromKey(key),
   }));
 
-  // Transform data to array of arrays
-  const headers = exportColumns.map((col) => col.header);
-  const rows = data.map((row) =>
-    exportColumns.map((col) => {
+  // Set up worksheet columns
+  worksheet.columns = exportColumns.map((col, i) => ({
+    header: col.header,
+    key: `col${i}`,
+    width: Math.min(Math.max(col.header.length + 2, 12), 50),
+  }));
+
+  // Style header row
+  worksheet.getRow(1).font = { bold: true, size: 11 };
+  worksheet.getRow(1).fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFE5E5E5" },
+  };
+  worksheet.getRow(1).alignment = { vertical: "middle", horizontal: "center" };
+
+  // Add data rows
+  data.forEach((row) => {
+    const rowData: Record<string, any> = {};
+    exportColumns.forEach((col, i) => {
       const value = getNestedValue(row, String(col.key));
-      return formatValueForExport(value);
-    })
-  );
-
-  // Create workbook and worksheet
-  const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-
-  // Auto-size columns
-  const maxWidths = exportColumns.map((col, i) => {
-    const headerWidth = col.header.length;
-    const maxDataWidth = Math.max(
-      ...rows.map((row) => String(row[i] || "").length)
-    );
-    return Math.min(Math.max(headerWidth, maxDataWidth) + 2, 50);
+      rowData[`col${i}`] = formatValueForExport(value);
+    });
+    worksheet.addRow(rowData);
   });
-  worksheet["!cols"] = maxWidths.map((width) => ({ wch: width }));
+
+  // Auto-size columns based on content
+  worksheet.columns.forEach((column, i) => {
+    let maxLength = exportColumns[i]?.header.length || 10;
+    data.forEach((row) => {
+      const value = getNestedValue(row, String(exportColumns[i]?.key || ""));
+      const cellLength = String(formatValueForExport(value)).length;
+      if (cellLength > maxLength) maxLength = cellLength;
+    });
+    column.width = Math.min(maxLength + 2, 50);
+  });
 
   // Generate and download
-  XLSX.writeFile(workbook, `${filename}.xlsx`);
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${filename}.xlsx`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 // ==================== MULTI-SHEET EXCEL EXPORT ====================
@@ -103,8 +129,8 @@ export async function exportToExcelMultiSheet(
     return;
   }
 
-  const XLSX = await import("xlsx");
-  const workbook = XLSX.utils.book_new();
+  const ExcelJS = await import("exceljs");
+  const workbook = new ExcelJS.Workbook();
 
   sheets.forEach((sheet) => {
     if (sheet.data.length === 0) return;
@@ -114,30 +140,59 @@ export async function exportToExcelMultiSheet(
       header: formatHeaderFromKey(key),
     }));
 
-    const headers = exportColumns.map((col) => col.header);
-    const rows = sheet.data.map((row) =>
-      exportColumns.map((col) => {
+    const worksheet = workbook.addWorksheet(sheet.name.substring(0, 31)); // Excel sheet name limit
+
+    // Set up worksheet columns
+    worksheet.columns = exportColumns.map((col, i) => ({
+      header: col.header,
+      key: `col${i}`,
+      width: Math.min(Math.max(col.header.length + 2, 12), 50),
+    }));
+
+    // Style header row
+    worksheet.getRow(1).font = { bold: true, size: 11 };
+    worksheet.getRow(1).fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFE5E5E5" },
+    };
+    worksheet.getRow(1).alignment = { vertical: "middle", horizontal: "center" };
+
+    // Add data rows
+    sheet.data.forEach((row) => {
+      const rowData: Record<string, any> = {};
+      exportColumns.forEach((col, i) => {
         const value = getNestedValue(row, col.key);
-        return formatValueForExport(value);
-      })
-    );
-
-    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-    
-    // Auto-size columns
-    const maxWidths = exportColumns.map((col, i) => {
-      const headerWidth = col.header.length;
-      const maxDataWidth = Math.max(
-        ...rows.map((row) => String(row[i] || "").length)
-      );
-      return Math.min(Math.max(headerWidth, maxDataWidth) + 2, 50);
+        rowData[`col${i}`] = formatValueForExport(value);
+      });
+      worksheet.addRow(rowData);
     });
-    worksheet["!cols"] = maxWidths.map((width) => ({ wch: width }));
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, sheet.name.substring(0, 31)); // Excel sheet name limit
+    // Auto-size columns based on content
+    worksheet.columns.forEach((column, i) => {
+      let maxLength = exportColumns[i]?.header.length || 10;
+      sheet.data.forEach((row) => {
+        const value = getNestedValue(row, exportColumns[i]?.key || "");
+        const cellLength = String(formatValueForExport(value)).length;
+        if (cellLength > maxLength) maxLength = cellLength;
+      });
+      column.width = Math.min(maxLength + 2, 50);
+    });
   });
 
-  XLSX.writeFile(workbook, `${filename}.xlsx`);
+  // Generate and download
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${filename}.xlsx`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 // ==================== SPECIFIC ANALYTICS EXPORTERS ====================

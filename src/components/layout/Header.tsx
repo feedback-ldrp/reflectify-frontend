@@ -146,6 +146,7 @@ export function Header() {
                 {user.isSuper &&
                   HeaderRoute("/feedback-forms", "Feedback Forms")}
                 {user.isSuper && HeaderRoute("/analytics", "Analytics")}
+                {user.isSuper && HeaderRoute("/trends", "Trends")}
 
                 <button
                   onClick={handleLogout}
@@ -279,6 +280,15 @@ export function Header() {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Analytics
+                </Link>
+              )}
+              {user.isSuper && (
+                <Link
+                  href="/trends"
+                  className="block text-light-text dark:text-dark-text py-2 font-medium text-base"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Trends
                 </Link>
               )}
               {/* {user.isSuper && (
