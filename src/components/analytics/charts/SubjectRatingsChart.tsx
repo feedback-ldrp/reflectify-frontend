@@ -19,12 +19,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { BookOpen, Monitor, Laptop, Download } from "lucide-react";
+import { BookOpen, Monitor, Laptop, Download, ExternalLink } from "lucide-react";
 import { SubjectLectureLabRating } from "@/interfaces/analytics";
 
 interface SubjectRatingsChartProps {
     data: SubjectLectureLabRating[];
     isLoading?: boolean;
+    onSubjectClick?: (subjectId: string, subjectName: string) => void;
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -78,12 +79,14 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
     data,
     isLoading = false,
+    onSubjectClick,
 }) => {
     const chartData = useMemo(() => {
         // Group data by subjectAbbreviation to aggregate multiple faculty entries for same subject
         const subjectGroups = new Map<
             string,
             {
+                subjectId: string;
                 subject: string;
                 subjectName: string; // Add this
                 subjectAbbreviation: string;
@@ -102,6 +105,7 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
 
             if (!subjectGroups.has(key)) {
                 subjectGroups.set(key, {
+                    subjectId: item.subjectId as string,
                     subject: item.subjectName, // Full subject name
                     subjectName: item.subjectName, // Add this
                     subjectAbbreviation:
@@ -146,6 +150,7 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
         // Convert to chart data format
         return Array.from(subjectGroups.values())
             .map((group) => ({
+                subjectId: group.subjectId, // Add subjectId for click handling
                 subject: group.subjectAbbreviation, // For display (abbreviation)
                 subjectName: group.subjectName, // Add full name for export
                 lectureAverageRating:
@@ -447,6 +452,12 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
                 <div className="text-md text-light-muted-text dark:text-dark-muted-text">
                     Comparing ratings across {stats.totalSubjects} subjects •{" "}
                     {stats.totalResponses} total responses
+                    {onSubjectClick && (
+                        <span className="ml-2 inline-flex items-center gap-1 text-light-highlight dark:text-dark-highlight">
+                            <ExternalLink className="h-3 w-3" />
+                            Click bars for details
+                        </span>
+                    )}
                 </div>
             </CardHeader>
             <CardContent>
@@ -505,6 +516,12 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
                             name="Lecture Rating"
                             radius={[4, 4, 0, 0]}
                             barSize={20}
+                            cursor={onSubjectClick ? "pointer" : undefined}
+                            onClick={(data: any) => {
+                                if (onSubjectClick && data?.subjectId) {
+                                    onSubjectClick(data.subjectId, data.subjectName);
+                                }
+                            }}
                         />
                         <Bar
                             dataKey="labAverageRating"
@@ -512,6 +529,12 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
                             name="Lab Rating"
                             radius={[4, 4, 0, 0]}
                             barSize={20}
+                            cursor={onSubjectClick ? "pointer" : undefined}
+                            onClick={(data: any) => {
+                                if (onSubjectClick && data?.subjectId) {
+                                    onSubjectClick(data.subjectId, data.subjectName);
+                                }
+                            }}
                         />
                     </BarChart>
                 </ResponsiveContainer>

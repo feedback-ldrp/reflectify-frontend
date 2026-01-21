@@ -4,8 +4,13 @@
  */
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
-import analyticsService from "@/services/analyticsService";
+import { useMemo, useState, useCallback } from "react";
+import analyticsService, {
+    OptimizedAnalyticsResponse,
+    SubjectDetailedAnalytics,
+    FacultyDetailedAnalytics,
+    DivisionDetailedAnalytics,
+} from "@/services/analyticsService";
 import { AnalyticsDataProcessor } from "@/utils/analyticsProcessor";
 import {
     AnalyticsFilterParams,
@@ -22,7 +27,15 @@ export const ANALYTICS_KEYS = {
         [...ANALYTICS_KEYS.all, "filterDictionary"] as const,
     completeData: (filters: AnalyticsFilterParams) =>
         [...ANALYTICS_KEYS.all, "completeData", filters] as const,
+    optimizedData: (filters: AnalyticsFilterParams) =>
+        [...ANALYTICS_KEYS.all, "optimizedData", filters] as const,
     totalResponses: () => [...ANALYTICS_KEYS.all, "totalResponses"] as const,
+    subjectDetailed: (subjectId: string, filters?: any) =>
+        [...ANALYTICS_KEYS.all, "subject", subjectId, "detailed", filters] as const,
+    facultyDetailed: (facultyId: string, filters?: any) =>
+        [...ANALYTICS_KEYS.all, "faculty", facultyId, "detailed", filters] as const,
+    divisionDetailed: (divisionId: string, filters?: any) =>
+        [...ANALYTICS_KEYS.all, "division", divisionId, "detailed", filters] as const,
 };
 
 // Fetch filter dictionary for dropdowns
@@ -208,3 +221,156 @@ export const useAnalyticsActions = () => {
         invalidateFilterDictionary,
     };
 };
+
+// ==================== OPTIMIZED ANALYTICS HOOKS ====================
+// These hooks use the new backend endpoints that return pre-aggregated data
+
+// Fetch optimized (pre-aggregated) analytics data - recommended for new implementations
+export const useOptimizedAnalyticsData = (filters: AnalyticsFilterParams = {}) => {
+    return useQuery<OptimizedAnalyticsResponse>({
+        queryKey: ANALYTICS_KEYS.optimizedData(filters),
+        queryFn: () => analyticsService.getOptimizedAnalyticsData(filters),
+        staleTime: 0, // Real-time data as requested
+    });
+};
+
+// Fetch subject detailed analytics for drill-down
+export const useSubjectDetailedAnalytics = (
+    subjectId: string | null,
+    filters?: { academicYearId?: string; semesterId?: string; departmentId?: string }
+) => {
+    return useQuery<SubjectDetailedAnalytics>({
+        queryKey: ANALYTICS_KEYS.subjectDetailed(subjectId || "", filters),
+        queryFn: () => analyticsService.getSubjectDetailedAnalytics(subjectId!, filters),
+        enabled: !!subjectId,
+        staleTime: 0, // Real-time data
+    });
+};
+
+// Fetch faculty detailed analytics for drill-down
+export const useFacultyDetailedAnalytics = (
+    facultyId: string | null,
+    filters?: { academicYearId?: string }
+) => {
+    return useQuery<FacultyDetailedAnalytics>({
+        queryKey: ANALYTICS_KEYS.facultyDetailed(facultyId || "", filters),
+        queryFn: () => analyticsService.getFacultyDetailedAnalytics(facultyId!, filters),
+        enabled: !!facultyId,
+        staleTime: 0, // Real-time data
+    });
+};
+
+// Fetch division detailed analytics for drill-down
+export const useDivisionDetailedAnalytics = (
+    divisionId: string | null,
+    filters?: { academicYearId?: string }
+) => {
+    return useQuery<DivisionDetailedAnalytics>({
+        queryKey: ANALYTICS_KEYS.divisionDetailed(divisionId || "", filters),
+        queryFn: () => analyticsService.getDivisionDetailedAnalytics(divisionId!, filters),
+        enabled: !!divisionId,
+        staleTime: 0, // Real-time data
+    });
+};
+
+// ==================== DRILL-DOWN STATE MANAGEMENT ====================
+
+interface DrillDownState {
+    activePanel: 'subject' | 'faculty' | 'division' | null;
+    subjectId: string | null;
+    subjectName: string | null;
+    facultyId: string | null;
+    facultyName: string | null;
+    divisionId: string | null;
+    divisionName: string | null;
+}
+
+const initialDrillDownState: DrillDownState = {
+    activePanel: null,
+    subjectId: null,
+    subjectName: null,
+    facultyId: null,
+    facultyName: null,
+    divisionId: null,
+    divisionName: null,
+};
+
+// Hook to manage drill-down panel state
+export const useAnalyticsDrillDown = (filters?: AnalyticsFilterParams) => {
+    const [state, setState] = useState<DrillDownState>(initialDrillDownState);
+
+    const openSubjectPanel = useCallback((subjectId: string, subjectName: string) => {
+        setState({
+            ...initialDrillDownState,
+            activePanel: 'subject',
+            subjectId,
+            subjectName,
+        });
+    }, []);
+
+    const openFacultyPanel = useCallback((facultyId: string, facultyName: string) => {
+        setState({
+            ...initialDrillDownState,
+            activePanel: 'faculty',
+            facultyId,
+            facultyName,
+        });
+    }, []);
+
+    const openDivisionPanel = useCallback((divisionId: string, divisionName: string) => {
+        setState({
+            ...initialDrillDownState,
+            activePanel: 'division',
+            divisionId,
+            divisionName,
+        });
+    }, []);
+
+    const closePanel = useCallback(() => {
+        setState(initialDrillDownState);
+    }, []);
+
+    // Navigate from one panel to another (for nested drill-down)
+    const navigateToSubject = useCallback((subjectId: string, subjectName: string) => {
+        setState((prev) => ({
+            ...prev,
+            activePanel: 'subject',
+            subjectId,
+            subjectName,
+        }));
+    }, []);
+
+    const navigateToFaculty = useCallback((facultyId: string, facultyName: string) => {
+        setState((prev) => ({
+            ...prev,
+            activePanel: 'faculty',
+            facultyId,
+            facultyName,
+        }));
+    }, []);
+
+    const navigateToDivision = useCallback((divisionId: string, divisionName: string) => {
+        setState((prev) => ({
+            ...prev,
+            activePanel: 'division',
+            divisionId,
+            divisionName,
+        }));
+    }, []);
+
+    return {
+        state,
+        isSubjectPanelOpen: state.activePanel === 'subject',
+        isFacultyPanelOpen: state.activePanel === 'faculty',
+        isDivisionPanelOpen: state.activePanel === 'division',
+        openSubjectPanel,
+        openFacultyPanel,
+        openDivisionPanel,
+        closePanel,
+        navigateToSubject,
+        navigateToFaculty,
+        navigateToDivision,
+        filters,
+    };
+};
+

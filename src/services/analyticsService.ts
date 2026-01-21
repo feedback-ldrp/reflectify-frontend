@@ -223,6 +223,280 @@ const analyticsService = {
             throw error;
         }
     },
+
+    // ==================== OPTIMIZED ANALYTICS DATA ====================
+
+    // Get optimized (pre-aggregated) analytics data - no raw snapshots returned
+    getOptimizedAnalyticsData: async (
+        filters?: AnalyticsFilterParams
+    ): Promise<OptimizedAnalyticsResponse> => {
+        try {
+            const response = await axiosInstance.get<
+                ApiResponse<OptimizedAnalyticsResponse>
+            >("/api/v1/analytics/optimized-data", {
+                params: filters,
+            });
+            return response.data.data;
+        } catch (error) {
+            showToast.error("Error fetching optimized analytics data: " + error);
+            throw error;
+        }
+    },
+
+    // ==================== DETAILED DRILL-DOWN ENDPOINTS ====================
+
+    // Get detailed analytics for a specific subject
+    getSubjectDetailedAnalytics: async (
+        subjectId: IdType,
+        filters?: { academicYearId?: IdType; semesterId?: IdType; departmentId?: IdType }
+    ): Promise<SubjectDetailedAnalytics> => {
+        try {
+            const response = await axiosInstance.get<
+                ApiResponse<SubjectDetailedAnalytics>
+            >(`/api/v1/analytics/subjects/${subjectId}/detailed`, {
+                params: filters,
+            });
+            return response.data.data;
+        } catch (error) {
+            showToast.error("Error fetching subject detailed analytics: " + error);
+            throw error;
+        }
+    },
+
+    // Get detailed analytics for a specific faculty member
+    getFacultyDetailedAnalytics: async (
+        facultyId: IdType,
+        filters?: { academicYearId?: IdType }
+    ): Promise<FacultyDetailedAnalytics> => {
+        try {
+            const response = await axiosInstance.get<
+                ApiResponse<FacultyDetailedAnalytics>
+            >(`/api/v1/analytics/faculty/${facultyId}/detailed`, {
+                params: filters,
+            });
+            return response.data.data;
+        } catch (error) {
+            showToast.error("Error fetching faculty detailed analytics: " + error);
+            throw error;
+        }
+    },
+
+    // Get detailed analytics for a specific division
+    getDivisionDetailedAnalytics: async (
+        divisionId: IdType,
+        filters?: { academicYearId?: IdType }
+    ): Promise<DivisionDetailedAnalytics> => {
+        try {
+            const response = await axiosInstance.get<
+                ApiResponse<DivisionDetailedAnalytics>
+            >(`/api/v1/analytics/divisions/${divisionId}/detailed`, {
+                params: filters,
+            });
+            return response.data.data;
+        } catch (error) {
+            showToast.error("Error fetching division detailed analytics: " + error);
+            throw error;
+        }
+    },
 };
+
+// ==================== DETAILED ANALYTICS INTERFACES ====================
+
+export interface OptimizedAnalyticsResponse {
+    overallStats: {
+        totalResponses: number;
+        averageRating: number;
+        uniqueSubjects: number;
+        uniqueFaculties: number;
+        uniqueStudents: number;
+        uniqueDivisions: number;
+    };
+    subjectRatings: Array<{
+        subjectId: string;
+        subjectName: string;
+        subjectAbbreviation: string;
+        subjectCode: string;
+        lectureRating: number | null;
+        labRating: number | null;
+        overallRating: number;
+        lectureResponses: number;
+        labResponses: number;
+        totalResponses: number;
+        facultyCount: number;
+        divisionCount: number;
+    }>;
+    facultyPerformance: Array<{
+        facultyId: string;
+        facultyName: string;
+        facultyAbbreviation: string;
+        designation: string;
+        averageRating: number;
+        totalResponses: number;
+        rank: number;
+        subjectCount: number;
+        divisionCount: number;
+    }>;
+    divisionPerformance: Array<{
+        divisionId: string;
+        divisionName: string;
+        departmentName: string;
+        semesterNumber: number;
+        averageRating: number;
+        totalResponses: number;
+        facultyCount: number;
+        subjectCount: number;
+    }>;
+    academicYearTrends: Array<{
+        academicYearId: string;
+        academicYearString: string;
+        averageRating: number;
+        totalResponses: number;
+        departmentCount: number;
+        divisionCount: number;
+    }>;
+    semesterTrends: Array<{
+        semesterNumber: number;
+        academicYearData: Array<{
+            academicYearId: string;
+            academicYearString: string;
+            averageRating: number;
+            responseCount: number;
+        }>;
+    }>;
+    departmentTrends: Array<{
+        academicYearString: string;
+        departmentData: Array<{
+            departmentId: string;
+            departmentName: string;
+            averageRating: number;
+            responseCount: number;
+        }>;
+    }>;
+    filters: {
+        academicYearId?: string;
+        departmentId?: string;
+        semesterId?: string;
+        divisionId?: string;
+        subjectId?: string;
+        lectureType?: string;
+    };
+    generatedAt: string;
+}
+
+export interface SubjectDetailedAnalytics {
+    subject: {
+        id: string;
+        name: string;
+        abbreviation: string;
+        code: string;
+    };
+    overallRating: number;
+    lectureRating: number | null;
+    labRating: number | null;
+    totalResponses: number;
+    lectureResponses: number;
+    labResponses: number;
+    facultyBreakdown: Array<{
+        facultyId: string;
+        facultyName: string;
+        facultyAbbreviation: string;
+        lectureType: 'LECTURE' | 'LAB';
+        rating: number;
+        responses: number;
+        divisions: string[];
+    }>;
+    divisionBreakdown: Array<{
+        divisionId: string;
+        divisionName: string;
+        lectureRating: number | null;
+        labRating: number | null;
+        totalRating: number;
+        responses: number;
+    }>;
+    questionBreakdown: Array<{
+        categoryId: string;
+        categoryName: string;
+        avgRating: number;
+        questionCount: number;
+    }>;
+}
+
+export interface FacultyDetailedAnalytics {
+    faculty: {
+        id: string;
+        name: string;
+        abbreviation: string;
+        designation: string;
+    };
+    overallRating: number;
+    totalResponses: number;
+    rank: number;
+    totalFaculty: number;
+    subjectBreakdown: Array<{
+        subjectId: string;
+        subjectName: string;
+        subjectAbbreviation: string;
+        lectureType: 'LECTURE' | 'LAB';
+        rating: number;
+        responses: number;
+        semester: number;
+        academicYear: string;
+    }>;
+    divisionBreakdown: Array<{
+        divisionId: string;
+        divisionName: string;
+        subjectName: string;
+        lectureType: 'LECTURE' | 'LAB';
+        rating: number;
+        responses: number;
+    }>;
+    questionCategoryBreakdown: Array<{
+        category: string;
+        avgRating: number;
+        questionCount: number;
+    }>;
+    trendData: Array<{
+        academicYearId: string;
+        academicYear: string;
+        semester: number;
+        rating: number;
+        responses: number;
+    }>;
+}
+
+export interface DivisionDetailedAnalytics {
+    division: {
+        id: string;
+        name: string;
+        departmentName: string;
+        semesterNumber: number;
+    };
+    overallRating: number;
+    totalResponses: number;
+    facultyBreakdown: Array<{
+        facultyId: string;
+        facultyName: string;
+        facultyAbbreviation: string;
+        subjectName: string;
+        lectureType: 'LECTURE' | 'LAB';
+        rating: number;
+        responses: number;
+    }>;
+    subjectBreakdown: Array<{
+        subjectId: string;
+        subjectName: string;
+        subjectAbbreviation: string;
+        lectureRating: number | null;
+        labRating: number | null;
+        totalRating: number;
+        responses: number;
+    }>;
+    academicYearComparison: Array<{
+        academicYearId: string;
+        academicYearString: string;
+        rating: number;
+        responses: number;
+    }>;
+}
 
 export default analyticsService;

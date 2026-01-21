@@ -1,6 +1,6 @@
 /**
  * @file src/app/(main)/analytics/page.tsx
- * @description Completely revamped analytics dashboard with clean architecture
+ * @description Completely revamped analytics dashboard with clean architecture and drill-down capabilities
  */
 
 "use client";
@@ -17,6 +17,10 @@ import {
     useFilterDictionary,
     useProcessedAnalytics,
     useAnalyticsActions,
+    useAnalyticsDrillDown,
+    useSubjectDetailedAnalytics,
+    useFacultyDetailedAnalytics,
+    useDivisionDetailedAnalytics,
 } from "@/hooks/useAnalyticsData";
 import { AnalyticsFilters } from "@/components/analytics/AnalyticsFilters";
 import { AnalyticsOverview } from "@/components/analytics/AnalyticsOverview";
@@ -31,6 +35,13 @@ import AcademicYearDepartmentComparisonChart from "@/components/analytics/charts
 import SubjectFacultyPerformanceChart from "@/components/analytics/charts/SubjectFacultyPerformanceComparisonChart";
 import showToast from "@/lib/toast";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
+
+// Import drill-down panels
+import {
+    SubjectDetailPanel,
+    FacultyDetailPanel,
+    DivisionDetailPanel,
+} from "@/components/analytics/panels";
 
 // Animation variants
 const containerVariants = {
@@ -66,6 +77,33 @@ const AnalyticsPage: React.FC = () => {
     } = useProcessedAnalytics(filters);
 
     const { invalidateAll } = useAnalyticsActions();
+
+    // Drill-down state management
+    const drillDown = useAnalyticsDrillDown(filters);
+
+    // Detailed analytics data for panels
+    const {
+        data: subjectDetails,
+        isLoading: subjectDetailsLoading,
+    } = useSubjectDetailedAnalytics(drillDown.state.subjectId, {
+        academicYearId: filters.academicYearId,
+        semesterId: filters.semesterId,
+        departmentId: filters.departmentId,
+    });
+
+    const {
+        data: facultyDetails,
+        isLoading: facultyDetailsLoading,
+    } = useFacultyDetailedAnalytics(drillDown.state.facultyId, {
+        academicYearId: filters.academicYearId,
+    });
+
+    const {
+        data: divisionDetails,
+        isLoading: divisionDetailsLoading,
+    } = useDivisionDetailedAnalytics(drillDown.state.divisionId, {
+        academicYearId: filters.academicYearId,
+    });
 
     const selectedDivisionId = filters.divisionId;
     const isSingleDivisionSelected =
@@ -261,6 +299,9 @@ const AnalyticsPage: React.FC = () => {
                                             processedData?.subjectRatings || []
                                         }
                                         isLoading={analyticsDataLoading}
+                                        onSubjectClick={(subjectId, subjectName) => {
+                                            drillDown.openSubjectPanel(subjectId, subjectName);
+                                        }}
                                     />
                                     <SubjectFacultyPerformanceChart
                                         data={
@@ -319,6 +360,9 @@ const AnalyticsPage: React.FC = () => {
                                             []
                                         }
                                         academicYearId={filters.academicYearId}
+                                        onFacultyClick={(facultyId, facultyName) => {
+                                            drillDown.openFacultyPanel(facultyId, facultyName);
+                                        }}
                                     />
                                 </TabsContent>
                             </div>
@@ -326,6 +370,49 @@ const AnalyticsPage: React.FC = () => {
                     </div>
                 </motion.div>
             </div>
+
+            {/* Drill-down Panels */}
+            <SubjectDetailPanel
+                isOpen={drillDown.isSubjectPanelOpen}
+                onClose={drillDown.closePanel}
+                subjectName={drillDown.state.subjectName || "Subject Details"}
+                data={subjectDetails || null}
+                isLoading={subjectDetailsLoading}
+                onFacultyClick={(facultyId, facultyName) => {
+                    drillDown.navigateToFaculty(facultyId, facultyName);
+                }}
+                onDivisionClick={(divisionId, divisionName) => {
+                    drillDown.navigateToDivision(divisionId, divisionName);
+                }}
+            />
+
+            <FacultyDetailPanel
+                isOpen={drillDown.isFacultyPanelOpen}
+                onClose={drillDown.closePanel}
+                facultyName={drillDown.state.facultyName || "Faculty Details"}
+                data={facultyDetails || null}
+                isLoading={facultyDetailsLoading}
+                onSubjectClick={(subjectId, subjectName) => {
+                    drillDown.navigateToSubject(subjectId, subjectName);
+                }}
+                onDivisionClick={(divisionId, divisionName) => {
+                    drillDown.navigateToDivision(divisionId, divisionName);
+                }}
+            />
+
+            <DivisionDetailPanel
+                isOpen={drillDown.isDivisionPanelOpen}
+                onClose={drillDown.closePanel}
+                divisionName={drillDown.state.divisionName || "Division Details"}
+                data={divisionDetails || null}
+                isLoading={divisionDetailsLoading}
+                onFacultyClick={(facultyId, facultyName) => {
+                    drillDown.navigateToFaculty(facultyId, facultyName);
+                }}
+                onSubjectClick={(subjectId, subjectName) => {
+                    drillDown.navigateToSubject(subjectId, subjectName);
+                }}
+            />
         </div>
     );
 };

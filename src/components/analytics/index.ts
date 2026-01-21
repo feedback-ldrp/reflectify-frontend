@@ -11,4 +11,10 @@ export { default as SubjectHorizontalBarChart } from "./SubjectHorizontalBarChar
 export { default as ResponseRateChart } from "./ResponseRateChart";
 export { default as DepartmentComparisonChart } from "./DepartmentComparisonChart";
 
+// Drill-down components
+export { DrillDownPanel, DrillDownSection, StatCard, RatingBadge } from "./DrillDownPanel";
+export { DetailTable, columnRenderers } from "./DetailTable";
+export { SubjectDetailPanel, FacultyDetailPanel, DivisionDetailPanel } from "./panels";
+
 export * from "./chartConfigs";
+

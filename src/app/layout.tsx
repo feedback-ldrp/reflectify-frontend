@@ -36,7 +36,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={dmsans.className}>
+            <body className={dmsans.className} suppressHydrationWarning>
                 <ThemeProvider>
                     <ReactQueryProvider>
                         <AuthProvider>

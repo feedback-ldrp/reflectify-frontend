@@ -32,6 +32,7 @@ interface FacultyPerformanceChartProps {
     isLoading?: boolean;
     showTop?: number;
     academicYearId?: string; // Add academic year ID for export
+    onFacultyClick?: (facultyId: string, facultyName: string) => void;
 }
 
 // Custom Tooltip component for Recharts
@@ -98,7 +99,7 @@ const getRatingColorClass = (rating: number) => {
 
 export const FacultyPerformanceChart: React.FC<
     FacultyPerformanceChartProps
-> = ({ data, isLoading = false, showTop = 15, academicYearId }) => {
+> = ({ data, isLoading = false, showTop = 15, academicYearId, onFacultyClick }) => {
     const [isExporting, setIsExporting] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -410,6 +411,11 @@ export const FacultyPerformanceChart: React.FC<
                 <div className="text-md text-light-muted-text dark:text-dark-muted-text">
                     Top {showTop} faculty members ranked by average rating •{" "}
                     {stats?.totalResponses} total responses
+                    {onFacultyClick && (
+                        <span className="ml-2 text-light-highlight dark:text-dark-highlight">
+                            • Click on bars for details
+                        </span>
+                    )}
                 </div>
             </CardHeader>
             <CardContent>
@@ -467,6 +473,12 @@ export const FacultyPerformanceChart: React.FC<
                             name="Average Rating"
                             radius={[4, 4, 0, 0]}
                             barSize={20}
+                            cursor={onFacultyClick ? "pointer" : undefined}
+                            onClick={(data: any) => {
+                                if (onFacultyClick && data?.facultyId) {
+                                    onFacultyClick(data.facultyId, data.fullName || data.facultyName);
+                                }
+                            }}
                         >
                             {processedData.map((entry, index) => (
                                 <Cell
