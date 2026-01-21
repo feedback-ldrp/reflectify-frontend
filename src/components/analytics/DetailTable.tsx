@@ -101,10 +101,10 @@ export function DetailTable<T extends Record<string, any>>({
                   compact ? "px-3 py-2" : "px-4 py-3",
                   column.align === "right" && "text-right",
                   column.align === "center" && "text-center",
-                  column.sortable && "cursor-pointer select-none hover:bg-gray-100",
-                  column.width
+                  column.sortable &&
+                    "cursor-pointer select-none hover:bg-gray-100",
+                  column.width,
                 )}
-                style={column.width ? { width: column.width } : undefined}
                 onClick={
                   column.sortable
                     ? () => handleSort(String(column.key))
@@ -115,7 +115,7 @@ export function DetailTable<T extends Record<string, any>>({
                   className={cn(
                     "flex items-center gap-1",
                     column.align === "right" && "justify-end",
-                    column.align === "center" && "justify-center"
+                    column.align === "center" && "justify-center",
                   )}
                 >
                   <span>{column.header}</span>
@@ -147,7 +147,7 @@ export function DetailTable<T extends Record<string, any>>({
                 "border-b border-gray-100 transition-colors",
                 striped && rowIndex % 2 === 1 && "bg-gray-50/50",
                 onRowClick &&
-                  "cursor-pointer hover:bg-blue-50 hover:border-blue-100"
+                  "cursor-pointer hover:bg-blue-50 hover:border-blue-100",
               )}
               onClick={onRowClick ? () => onRowClick(row) : undefined}
             >
@@ -160,10 +160,12 @@ export function DetailTable<T extends Record<string, any>>({
                       "text-gray-900",
                       compact ? "px-3 py-2" : "px-4 py-3",
                       column.align === "right" && "text-right",
-                      column.align === "center" && "text-center"
+                      column.align === "center" && "text-center",
                     )}
                   >
-                    {column.render ? column.render(value, row) : formatValue(value)}
+                    {column.render
+                      ? column.render(value, row)
+                      : formatValue(value)}
                   </td>
                 );
               })}
@@ -207,8 +209,8 @@ export const columnRenderers = {
       value >= 75
         ? "text-green-600"
         : value >= 50
-        ? "text-yellow-600"
-        : "text-red-600";
+          ? "text-yellow-600"
+          : "text-red-600";
     return <span className={colorClass}>{value.toFixed(1)}%</span>;
   },
 
@@ -219,7 +221,7 @@ export const columnRenderers = {
         "inline-flex px-2 py-0.5 text-xs font-medium rounded-full",
         value === "LECTURE"
           ? "bg-purple-100 text-purple-700"
-          : "bg-teal-100 text-teal-700"
+          : "bg-teal-100 text-teal-700",
       )}
     >
       {value}
@@ -243,9 +245,7 @@ export const columnRenderers = {
     (maxLength: number = 30) =>
     (value: string) => {
       if (!value || value.length <= maxLength) return value;
-      return (
-        <span title={value}>{value.substring(0, maxLength)}...</span>
-      );
+      return <span title={value}>{value.substring(0, maxLength)}...</span>;
     },
 
   // Array as comma-separated badges
@@ -264,7 +264,9 @@ export const columnRenderers = {
           </span>
         ))}
         {value.length > 3 && (
-          <span className="text-xs text-gray-500">+{value.length - 3} more</span>
+          <span className="text-xs text-gray-500">
+            +{value.length - 3} more
+          </span>
         )}
       </div>
     );

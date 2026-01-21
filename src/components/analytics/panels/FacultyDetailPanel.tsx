@@ -21,6 +21,7 @@ interface FacultyDetailPanelProps {
   isLoading?: boolean;
   onSubjectClick?: (subjectId: string, subjectName: string) => void;
   onDivisionClick?: (divisionId: string, divisionName: string) => void;
+  inline?: boolean;
 }
 
 export const FacultyDetailPanel: React.FC<FacultyDetailPanelProps> = ({
@@ -31,6 +32,7 @@ export const FacultyDetailPanel: React.FC<FacultyDetailPanelProps> = ({
   isLoading = false,
   onSubjectClick,
   onDivisionClick,
+  inline = false,
 }) => {
   const handleExportCSV = () => {
     if (!data) return;
@@ -230,10 +232,11 @@ export const FacultyDetailPanel: React.FC<FacultyDetailPanelProps> = ({
       onClose={onClose}
       title={facultyName}
       subtitle={data ? `${data.faculty.designation}` : undefined}
-      width="lg"
+      width="md"
       isLoading={isLoading}
       onExportCSV={handleExportCSV}
       onExportExcel={handleExportExcel}
+      inline={inline}
     >
       {!data && !isLoading ? (
         <div className="text-center py-8 text-gray-500">

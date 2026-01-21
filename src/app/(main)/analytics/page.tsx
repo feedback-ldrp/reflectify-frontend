@@ -190,29 +190,31 @@ const AnalyticsPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-light-muted-background dark:bg-dark-background">
-            <div className="max-w-[1920px] mx-auto px-6 py-6">
-                <motion.div
-                    initial="hidden"
-                    animate="visible"
-                    variants={containerVariants}
-                    className="space-y-4"
-                >
-                    {/* Header */}
-                    <motion.div className="bg-light-background dark:bg-dark-muted-background p-6 rounded-xl shadow-sm border border-light-secondary dark:border-dark-secondary">
-                        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                            {/* Left Section: Title and Descriptions */}
-                            <div>
-                                {/* Responsive text sizing */}
-                                <h1 className="text-3xl md:text-4xl font-extrabold text-light-text dark:text-dark-text flex items-center gap-3">
-                                    Analytics Dashboard
-                                </h1>
-                                <p className="text-base text-light-muted-text dark:text-dark-muted-text flex items-center gap-2 mt-2">
-                                    <ArrowTrendingUpIcon className="h-6 w-6 text-positive-main" />
-                                    Comprehensive feedback analytics and
-                                    insights
-                                </p>
-                            </div>
+        <div className="h-screen bg-light-muted-background dark:bg-dark-background flex overflow-hidden">
+            {/* Main Content Area - Shrinks when panel is open */}
+            <div className="flex-1 min-w-0 overflow-y-auto">
+                <div className="max-w-[1920px] mx-auto px-6 py-6">
+                    <motion.div
+                        initial="hidden"
+                        animate="visible"
+                        variants={containerVariants}
+                        className="space-y-4"
+                    >
+                        {/* Header */}
+                        <motion.div className="bg-light-background dark:bg-dark-muted-background p-6 rounded-xl shadow-sm border border-light-secondary dark:border-dark-secondary">
+                            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                {/* Left Section: Title and Descriptions */}
+                                <div>
+                                    {/* Responsive text sizing */}
+                                    <h1 className="text-3xl md:text-4xl font-extrabold text-light-text dark:text-dark-text flex items-center gap-3">
+                                        Analytics Dashboard
+                                    </h1>
+                                    <p className="text-base text-light-muted-text dark:text-dark-muted-text flex items-center gap-2 mt-2">
+                                        <ArrowTrendingUpIcon className="h-6 w-6 text-positive-main" />
+                                        Comprehensive feedback analytics and
+                                        insights
+                                    </p>
+                                </div>
 
                             {/* Right Section: Response Count and Last Updated */}
                             {/* Full width on small screens, auto width and right aligned on sm and up */}
@@ -369,9 +371,10 @@ const AnalyticsPage: React.FC = () => {
                         </Tabs>
                     </div>
                 </motion.div>
+                </div>
             </div>
 
-            {/* Drill-down Panels */}
+            {/* Drill-down Panels - Inline Flex, Resizable */}
             <SubjectDetailPanel
                 isOpen={drillDown.isSubjectPanelOpen}
                 onClose={drillDown.closePanel}
@@ -384,6 +387,7 @@ const AnalyticsPage: React.FC = () => {
                 onDivisionClick={(divisionId, divisionName) => {
                     drillDown.navigateToDivision(divisionId, divisionName);
                 }}
+                inline
             />
 
             <FacultyDetailPanel
@@ -398,6 +402,7 @@ const AnalyticsPage: React.FC = () => {
                 onDivisionClick={(divisionId, divisionName) => {
                     drillDown.navigateToDivision(divisionId, divisionName);
                 }}
+                inline
             />
 
             <DivisionDetailPanel
@@ -412,6 +417,7 @@ const AnalyticsPage: React.FC = () => {
                 onSubjectClick={(subjectId, subjectName) => {
                     drillDown.navigateToSubject(subjectId, subjectName);
                 }}
+                inline
             />
         </div>
     );

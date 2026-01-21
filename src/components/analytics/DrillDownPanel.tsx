@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { X, Download, FileSpreadsheet, FileText } from "lucide-react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { X, FileSpreadsheet, FileText, GripVertical, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface DrillDownPanelProps {
   isOpen: boolean;
@@ -16,13 +17,19 @@ interface DrillDownPanelProps {
   isLoading?: boolean;
   onExportCSV?: () => void;
   onExportExcel?: () => void;
+  resizable?: boolean;
+  defaultWidth?: number;
+  minWidth?: number;
+  maxWidth?: number;
+  /** If true, renders as inline flex panel instead of modal overlay */
+  inline?: boolean;
 }
 
 const widthClasses = {
-  sm: "w-[400px] max-w-[90vw]",
-  md: "w-[600px] max-w-[90vw]",
-  lg: "w-[800px] max-w-[90vw]",
-  xl: "w-[1000px] max-w-[90vw]",
+  sm: 400,
+  md: 500,
+  lg: 600,
+  xl: 800,
 };
 
 export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
@@ -31,12 +38,77 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
   title,
   subtitle,
   children,
-  width = "lg",
+  width = "md",
   isLoading = false,
   onExportCSV,
   onExportExcel,
+  resizable = true,
+  defaultWidth,
+  minWidth = 320,
+  maxWidth = 900,
+  inline = false,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
+  const [panelWidth, setPanelWidth] = useState(defaultWidth || widthClasses[width]);
+  const [isResizing, setIsResizing] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const startXRef = useRef(0);
+  const startWidthRef = useRef(0);
+
+  // Reset width when panel opens with a new default
+  useEffect(() => {
+    if (isOpen && defaultWidth) {
+      setPanelWidth(defaultWidth);
+    } else if (isOpen && !defaultWidth) {
+      setPanelWidth(widthClasses[width]);
+    }
+    // Expand when opening
+    if (isOpen) {
+      setIsCollapsed(false);
+    }
+  }, [isOpen, defaultWidth, width]);
+
+  // Handle resize
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsResizing(true);
+    startXRef.current = e.clientX;
+    startWidthRef.current = panelWidth;
+  }, [panelWidth]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      
+      // Calculate new width (resize from left edge, so subtract delta)
+      const delta = startXRef.current - e.clientX;
+      const newWidth = Math.min(
+        Math.max(startWidthRef.current + delta, minWidth),
+        Math.min(maxWidth, window.innerWidth * 0.6)
+      );
+      
+      setPanelWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "ew-resize";
+      document.body.style.userSelect = "none";
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isResizing, minWidth, maxWidth]);
 
   // Handle escape key press
   useEffect(() => {
@@ -50,13 +122,16 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
-  // Handle click outside
+  // For modal mode: Handle click outside
   useEffect(() => {
+    if (inline) return; // Skip for inline mode
+    
     const handleClickOutside = (e: MouseEvent) => {
       if (
         panelRef.current &&
         !panelRef.current.contains(e.target as Node) &&
-        isOpen
+        isOpen &&
+        !isResizing
       ) {
         onClose();
       }
@@ -71,10 +146,12 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
       clearTimeout(timeoutId);
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isResizing, inline]);
 
-  // Prevent body scroll when panel is open
+  // For modal mode: Prevent body scroll when panel is open
   useEffect(() => {
+    if (inline) return; // Skip for inline mode
+    
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -83,8 +160,154 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, inline]);
 
+  // ============ INLINE MODE ============
+  if (inline) {
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            ref={panelRef}
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ 
+              width: isCollapsed ? 48 : panelWidth, 
+              opacity: 1 
+            }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className={cn(
+              "relative h-full flex-shrink-0",
+              "bg-light-background dark:bg-dark-muted-background",
+              "border-l border-light-secondary dark:border-dark-secondary",
+              "flex flex-col overflow-hidden"
+            )}
+          >
+            {/* Resize Handle */}
+            {resizable && !isCollapsed && (
+              <div
+                onMouseDown={handleMouseDown}
+                className={cn(
+                  "absolute left-0 top-0 bottom-0 w-1 cursor-ew-resize group z-10",
+                  "hover:bg-primary-main/30 transition-colors",
+                  isResizing && "bg-primary-main/50"
+                )}
+              >
+                <div className={cn(
+                  "absolute left-0 top-1/2 -translate-y-1/2 w-4 h-10 -ml-2",
+                  "flex items-center justify-center rounded-l-md",
+                  "bg-light-secondary dark:bg-dark-secondary",
+                  "border border-r-0 border-light-tertiary dark:border-dark-tertiary",
+                  "opacity-0 group-hover:opacity-100 transition-opacity",
+                  isResizing && "opacity-100"
+                )}>
+                  <GripVertical className="w-3 h-3 text-light-muted-text dark:text-dark-muted-text" />
+                </div>
+              </div>
+            )}
+
+            {/* Collapsed State */}
+            {isCollapsed ? (
+              <div className="flex flex-col items-center py-4 h-full">
+                <button
+                  onClick={() => setIsCollapsed(false)}
+                  className="p-2 rounded-lg hover:bg-light-secondary dark:hover:bg-dark-secondary transition-colors mb-4"
+                  title="Expand panel"
+                >
+                  <ChevronRight className="w-5 h-5 text-light-muted-text dark:text-dark-muted-text rotate-180" />
+                </button>
+                <div className="flex-1 flex items-center justify-center">
+                  <span 
+                    className="text-xs font-medium text-light-muted-text dark:text-dark-muted-text whitespace-nowrap origin-center"
+                    style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+                  >
+                    {title}
+                  </span>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-lg hover:bg-light-secondary dark:hover:bg-dark-secondary transition-colors mt-4"
+                  title="Close panel"
+                >
+                  <X className="w-4 h-4 text-light-muted-text dark:text-dark-muted-text" />
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Header */}
+                <div className="flex-shrink-0 border-b border-light-secondary dark:border-dark-secondary bg-light-muted-background dark:bg-dark-noisy-background px-4 py-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-base font-semibold text-light-text dark:text-dark-text truncate">
+                        {title}
+                      </h2>
+                      {subtitle && (
+                        <p className="text-xs text-light-muted-text dark:text-dark-muted-text truncate mt-0.5">
+                          {subtitle}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {/* Export buttons */}
+                      {(onExportCSV || onExportExcel) && !isLoading && (
+                        <>
+                          {onExportCSV && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={onExportCSV}
+                              className="h-7 px-2"
+                              title="Export to CSV"
+                            >
+                              <FileText className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                          {onExportExcel && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={onExportExcel}
+                              className="h-7 px-2"
+                              title="Export to Excel"
+                            >
+                              <FileSpreadsheet className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </>
+                      )}
+                      {/* Collapse button */}
+                      <button
+                        onClick={() => setIsCollapsed(true)}
+                        className="p-1.5 rounded-lg hover:bg-light-secondary dark:hover:bg-dark-secondary transition-colors"
+                        title="Collapse panel"
+                      >
+                        <ChevronRight className="w-4 h-4 text-light-muted-text dark:text-dark-muted-text" />
+                      </button>
+                      {/* Close button */}
+                      <button
+                        onClick={onClose}
+                        className="p-1.5 rounded-lg hover:bg-light-secondary dark:hover:bg-dark-secondary transition-colors"
+                        title="Close panel"
+                      >
+                        <X className="w-4 h-4 text-light-muted-text dark:text-dark-muted-text" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto px-4 py-4">
+                  {isLoading ? <DrillDownPanelSkeleton /> : children}
+                </div>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
+
+  // ============ MODAL MODE (Original) ============
   if (!isOpen) return null;
 
   return (
@@ -101,29 +324,53 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
       {/* Panel */}
       <div
         ref={panelRef}
+        style={{ width: `${panelWidth}px` }}
         className={cn(
-          "fixed top-0 right-0 h-full z-50 bg-white shadow-2xl",
+          "fixed top-0 right-0 h-full z-50",
+          "bg-light-background dark:bg-dark-muted-background shadow-2xl",
           "transform transition-transform duration-300 ease-out",
-          "flex flex-col",
-          widthClasses[width],
+          "flex flex-col max-w-[90vw]",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
         role="dialog"
         aria-modal="true"
         aria-labelledby="panel-title"
       >
+        {/* Resize Handle */}
+        {resizable && (
+          <div
+            onMouseDown={handleMouseDown}
+            className={cn(
+              "absolute left-0 top-0 bottom-0 w-1.5 cursor-ew-resize group z-10",
+              "hover:bg-primary-main/20 transition-colors",
+              isResizing && "bg-primary-main/30"
+            )}
+          >
+            <div className={cn(
+              "absolute left-0 top-1/2 -translate-y-1/2 w-4 h-12 -ml-1.5",
+              "flex items-center justify-center rounded-l-md",
+              "bg-light-secondary dark:bg-dark-secondary",
+              "border border-r-0 border-light-tertiary dark:border-dark-tertiary",
+              "opacity-0 group-hover:opacity-100 transition-opacity",
+              isResizing && "opacity-100"
+            )}>
+              <GripVertical className="w-3 h-3 text-light-muted-text dark:text-dark-muted-text" />
+            </div>
+          </div>
+        )}
+
         {/* Header */}
-        <div className="flex-shrink-0 border-b border-gray-200 bg-gray-50 px-6 py-4">
+        <div className="flex-shrink-0 border-b border-light-secondary dark:border-dark-secondary bg-light-muted-background dark:bg-dark-noisy-background px-6 py-4">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0 pr-4">
               <h2
                 id="panel-title"
-                className="text-lg font-semibold text-gray-900 truncate"
+                className="text-lg font-semibold text-light-text dark:text-dark-text truncate"
               >
                 {title}
               </h2>
               {subtitle && (
-                <p className="mt-1 text-sm text-gray-500 truncate">{subtitle}</p>
+                <p className="mt-1 text-sm text-light-muted-text dark:text-dark-muted-text truncate">{subtitle}</p>
               )}
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -159,10 +406,10 @@ export const DrillDownPanel: React.FC<DrillDownPanelProps> = ({
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                className="p-2 rounded-full hover:bg-light-secondary dark:hover:bg-dark-secondary transition-colors"
                 aria-label="Close panel"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-light-muted-text dark:text-dark-muted-text" />
               </button>
             </div>
           </div>
@@ -241,18 +488,18 @@ export const DrillDownSection: React.FC<DrillDownSectionProps> = ({
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
+    <div className="border border-light-secondary dark:border-dark-secondary rounded-lg overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 bg-light-muted-background dark:bg-dark-noisy-background hover:bg-light-secondary dark:hover:bg-dark-secondary transition-colors"
       >
         <div className="flex items-center gap-2">
-          {icon && <span className="text-gray-500">{icon}</span>}
-          <span className="font-medium text-gray-900">{title}</span>
+          {icon && <span className="text-light-muted-text dark:text-dark-muted-text">{icon}</span>}
+          <span className="font-medium text-light-text dark:text-dark-text">{title}</span>
         </div>
         <svg
           className={cn(
-            "w-5 h-5 text-gray-500 transition-transform",
+            "w-5 h-5 text-light-muted-text dark:text-dark-muted-text transition-transform",
             isOpen ? "rotate-180" : ""
           )}
           fill="none"
@@ -284,7 +531,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   label,
   value,
   subtext,
-  colorClass = "bg-blue-50 text-blue-700",
+  colorClass = "bg-primary-lighter dark:bg-primary-bgDark text-primary-main",
 }) => {
   return (
     <div className={cn("p-4 rounded-lg", colorClass)}>
