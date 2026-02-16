@@ -6,7 +6,7 @@
 "use client";
 
 import Image from "next/image";
-import LightLogin from "/public/LightLogin.svg";
+import LightLogin from "@/../public/LightLogin.svg";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
