@@ -32,7 +32,6 @@ import {
   Download,
   Calendar,
   BarChart3,
-  PieChart,
   Activity,
   Zap,
   Eye,
@@ -719,7 +718,7 @@ const TrendsDashboard: React.FC = () => {
       return {
         healthScore: 0,
         healthTrend: 0,
-        responseRate: 0,
+        uniqueStudents: 0,
         totalResponses: 0,
         totalFaculty: 0,
         totalSubjects: 0,
@@ -947,15 +946,8 @@ const TrendsDashboard: React.FC = () => {
           : 0;
     }
 
-    // Calculate actual response rate (unique students who responded / expected)
+    // Unique students who participated
     const uniqueStudents = stats?.uniqueStudents || 0;
-    const responseRate =
-      uniqueStudents > 0
-        ? Math.min(
-            100,
-            Math.round(((stats?.totalResponses || 0) / uniqueStudents) * 10),
-          )
-        : 0;
 
     // Generate insights based on REAL data
     const insights: {
@@ -1037,7 +1029,7 @@ const TrendsDashboard: React.FC = () => {
     return {
       healthScore,
       healthTrend,
-      responseRate,
+      uniqueStudents,
       totalResponses: stats?.totalResponses || 0,
       totalFaculty: facultyData.length,
       totalSubjects: subjectData.length,
@@ -1097,9 +1089,9 @@ const TrendsDashboard: React.FC = () => {
         Unit: "responses",
       },
       {
-        Metric: "Response Rate",
-        Value: metrics.responseRate.toString(),
-        Unit: "%",
+        Metric: "Unique Students",
+        Value: metrics.uniqueStudents.toString(),
+        Unit: "students",
       },
       {
         Metric: "Total Faculty",
@@ -1147,7 +1139,11 @@ const TrendsDashboard: React.FC = () => {
               Value: metrics.totalResponses,
               Unit: "responses",
             },
-            { Metric: "Response Rate", Value: metrics.responseRate, Unit: "%" },
+            {
+              Metric: "Unique Students",
+              Value: metrics.uniqueStudents,
+              Unit: "students",
+            },
             {
               Metric: "Total Faculty",
               Value: metrics.totalFaculty,
@@ -1240,23 +1236,7 @@ const TrendsDashboard: React.FC = () => {
   // Insight action handlers
   const handleInsightAction = useCallback(
     (insight: { title: string; action?: string }) => {
-      if (
-        insight.action === "View Details" ||
-        insight.title.includes("Faculty Need Attention")
-      ) {
-        // Navigate to analytics performance tab
-        router.push("/analytics?tab=performance");
-      } else if (
-        insight.action === "Analyze Causes" ||
-        insight.title.includes("Declining")
-      ) {
-        router.push("/analytics?tab=trends");
-      } else if (insight.action === "Recognize Top Performers") {
-        // Scroll to top performers section or navigate
-        router.push("/analytics?tab=performance");
-      } else if (insight.action === "Compare Departments") {
-        router.push("/analytics?tab=trends");
-      } else if (insight.action === "View Response Status") {
+      if (insight.action) {
         router.push("/analytics");
       }
     },
@@ -1344,13 +1324,13 @@ const TrendsDashboard: React.FC = () => {
                   <div className="text-center px-4 py-2 bg-light-muted-background dark:bg-dark-noisy-background rounded-lg">
                     <p className="text-2xl font-bold text-primary-main">
                       <CountUp
-                        end={metrics.responseRate}
-                        suffix="%"
+                        end={metrics.uniqueStudents}
                         duration={2}
+                        separator=","
                       />
                     </p>
                     <p className="text-xs text-light-muted-text dark:text-dark-muted-text">
-                      Response Rate
+                      Students
                     </p>
                   </div>
                   <div className="text-center px-4 py-2 bg-light-muted-background dark:bg-dark-noisy-background rounded-lg">
@@ -1852,12 +1832,10 @@ const TrendsDashboard: React.FC = () => {
                       <Button
                         variant="outline"
                         className="w-full justify-start gap-3"
-                        onClick={() =>
-                          router.push("/analytics?tab=performance")
-                        }
+                        onClick={() => router.push("/analytics")}
                       >
                         <Award className="w-4 h-4" />
-                        Top Performers
+                        Faculty Performance
                       </Button>
                     </div>
                   </Card>
@@ -1937,23 +1915,26 @@ const TrendsDashboard: React.FC = () => {
               </ExpandableSection>
 
               <ExpandableSection
-                title="Question Category Analysis"
-                icon={<MessageSquare className="w-5 h-5" />}
+                title="Department Comparison"
+                icon={<Building2 className="w-5 h-5" />}
+                badge={metrics.departmentComparison.length}
               >
-                <div className="text-center py-8 text-light-muted-text dark:text-dark-muted-text">
-                  <PieChart className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Question category breakdown coming soon</p>
-                </div>
-              </ExpandableSection>
-
-              <ExpandableSection
-                title="Academic Year Trends"
-                icon={<Activity className="w-5 h-5" />}
-              >
-                <div className="text-center py-8 text-light-muted-text dark:text-dark-muted-text">
-                  <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Historical trend analysis coming soon</p>
-                </div>
+                {metrics.departmentComparison.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {metrics.departmentComparison.map((dept, index) => (
+                      <HeatmapCell
+                        key={index}
+                        value={dept.rating}
+                        label={dept.name}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-light-muted-text dark:text-dark-muted-text">
+                    <Building2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No department data available</p>
+                  </div>
+                )}
               </ExpandableSection>
             </div>
           </motion.div>

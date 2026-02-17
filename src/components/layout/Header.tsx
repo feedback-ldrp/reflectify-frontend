@@ -141,6 +141,7 @@ export function Header() {
             {user ? (
               <div className="flex items-center gap-3 lg:gap-4">
                 {HeaderRoute("/dashboard", "Dashboard")}
+                {HeaderRoute("/schedule", "Schedule")}
 
                 {user.isSuper && HeaderRoute("/upload", "Upload")}
                 {user.isSuper &&
@@ -221,6 +222,15 @@ export function Header() {
         className="md:hidden fixed top-[64px] sm:top-[72px] left-0 w-full bg-white dark:bg-dark-background shadow-lg border-t border-secondary-lighter dark:border-dark-secondary overflow-hidden z-40"
       >
         <div className="flex flex-col p-4 space-y-3">
+          {/* Schedule link - visible to everyone */}
+          <Link
+            href="/schedule"
+            className="block text-secondary-dark dark:text-dark-tertiary hover:text-primary-dark dark:hover:text-primary-light py-2 font-medium text-base"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Schedule
+          </Link>
+
           {!user && (
             <>
               <Link

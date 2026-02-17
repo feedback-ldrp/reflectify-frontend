@@ -118,6 +118,8 @@ export const DIVISION_ENDPOINTS = {
     BASE: `${API_V1_URL}/divisions`,
     getById: (id: string | number) => `${API_V1_URL}/divisions/${id}`,
     BATCH: `${API_V1_URL}/divisions/batch`,
+    getTimetable: (divisionId: string | number) =>
+        `${API_V1_URL}/divisions/${divisionId}/timetable`,
 };
 
 // Email management endpoints

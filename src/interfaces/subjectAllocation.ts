@@ -7,6 +7,14 @@ import { IdType } from "./common";
 import { Subject } from "./subject";
 import { Faculty } from "./faculty";
 import { Division } from "./division";
+import { Semester } from "./semester";
+import { Department } from "./department";
+import { AcademicYear } from "./academicYear";
+
+/**
+ * Lecture type enum matching backend
+ */
+export type LectureType = "LECTURE" | "LAB" | "TUTORIAL" | "SEMINAR" | "PROJECT";
 
 /**
  * Represents a subject allocation entity.
@@ -16,9 +24,17 @@ export interface SubjectAllocation {
   subjectId: IdType;
   facultyId: IdType;
   divisionId: IdType;
+  semesterId: IdType;
+  departmentId: IdType;
+  academicYearId: IdType;
+  lectureType: LectureType;
+  batch: string;
   subject?: Subject;
   faculty?: Faculty;
   division?: Division;
+  semester?: Semester;
+  department?: Department;
+  academicYear?: AcademicYear;
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
