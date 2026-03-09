@@ -15,7 +15,7 @@ import { Users, Eye, RefreshCw, Book } from "lucide-react";
 // Import our new components
 import {
   useFilterDictionary,
-  useProcessedAnalytics,
+  useOptimizedAnalyticsData,
   useAnalyticsActions,
   useAnalyticsDrillDown,
   useSubjectDetailedAnalytics,
@@ -69,12 +69,11 @@ const AnalyticsPage: React.FC = () => {
   } = useFilterDictionary();
 
   const {
-    data: processedData,
-    rawData,
+    data: optimizedData,
     isLoading: analyticsDataLoading,
     error: analyticsDataError,
     refetch: refetchAnalyticsData,
-  } = useProcessedAnalytics(filters);
+  } = useOptimizedAnalyticsData(filters);
 
   const { invalidateAll } = useAnalyticsActions();
 
@@ -103,20 +102,19 @@ const AnalyticsPage: React.FC = () => {
   const isSingleDivisionSelected =
     selectedDivisionId && typeof selectedDivisionId === "string";
 
-  // Derive the division name from the selected division ID
+  // Derive the division name from the selected division ID using optimizedData
   const selectedDivisionName = useMemo(() => {
-    if (isSingleDivisionSelected && rawData?.feedbackSnapshots) {
-      // Find the first snapshot that matches the selected divisionId
-      const foundSnapshot = rawData.feedbackSnapshots.find(
-        (s) => s.divisionId === selectedDivisionId,
+    if (isSingleDivisionSelected && optimizedData?.divisionPerformance) {
+      const foundDivision = optimizedData.divisionPerformance.find(
+        (d) => d.divisionId === selectedDivisionId,
       );
-      return foundSnapshot ? foundSnapshot.divisionName : null;
+      return foundDivision ? foundDivision.divisionName : null;
     }
     return null;
   }, [
     isSingleDivisionSelected,
     selectedDivisionId,
-    rawData?.feedbackSnapshots,
+    optimizedData?.divisionPerformance,
   ]);
 
   // Handle filter changes
@@ -219,9 +217,8 @@ const AnalyticsPage: React.FC = () => {
                     title="Refresh Feedback Forms"
                   >
                     <RefreshCw
-                      className={`w-5 h-5 ${
-                        analyticsDataLoading ? "animate-spin" : ""
-                      }`}
+                      className={`w-5 h-5 ${analyticsDataLoading ? "animate-spin" : ""
+                        }`}
                     />
                     {analyticsDataLoading ? "Refreshing ..." : "Refresh Data"}
                   </button>
@@ -242,7 +239,7 @@ const AnalyticsPage: React.FC = () => {
 
             {/* Overview Stats */}
             <AnalyticsOverview
-              stats={processedData?.overallStats || null}
+              stats={optimizedData?.overallStats || null}
               isLoading={analyticsDataLoading}
             />
 
@@ -281,36 +278,36 @@ const AnalyticsPage: React.FC = () => {
                 <div className="p-6">
                   <TabsContent value="subjects" className="space-y-6 mt-0">
                     <SubjectRatingsChart
-                      data={processedData?.subjectRatings || []}
+                      data={optimizedData?.subjectRatings || []}
                       isLoading={analyticsDataLoading}
                       onSubjectClick={(subjectId, subjectName) => {
                         drillDown.openSubjectPanel(subjectId, subjectName);
                       }}
                     />
                     <SubjectFacultyPerformanceChart
-                      data={processedData?.subjectFacultyPerformance || []}
+                      data={optimizedData?.subjectFacultyPerformance || []}
                       isLoading={analyticsDataLoading}
                     />
                   </TabsContent>
 
                   <TabsContent value="trends" className="space-y-6 mt-0">
                     <AcademicYearDepartmentComparisonChart
-                      data={processedData?.academicYearDepartmentTrends || []}
+                      data={optimizedData?.departmentTrends || []}
                       isLoading={analyticsDataLoading}
                     />
                     <AcademicYearSemesterPerformanceChart
-                      data={processedData?.academicYearSemesterTrends || []}
+                      data={optimizedData?.semesterTrends || []}
                       isLoading={analyticsDataLoading}
                     />
                     <AcademicYearDivisionPerformanceChart
                       data={
-                        processedData?.academicYearDivisionPerformance || []
+                        optimizedData?.academicYearDivisionTrends || []
                       }
                       isLoading={analyticsDataLoading}
                     />
 
                     <BatchComparisonChart
-                      data={processedData?.batchComparisons || []}
+                      data={optimizedData?.batchComparisons || []}
                       selectedDivisionName={selectedDivisionName} // Pass the derived name here
                       isLoading={analyticsDataLoading}
                     />
@@ -318,7 +315,7 @@ const AnalyticsPage: React.FC = () => {
 
                   <TabsContent value="performance" className="space-y-6 mt-0">
                     <FacultyPerformanceChart
-                      data={processedData?.facultyPerformance || []}
+                      data={optimizedData?.facultyPerformance || []}
                       academicYearId={filters.academicYearId}
                       onFacultyClick={(facultyId, facultyName) => {
                         drillDown.openFacultyPanel(facultyId, facultyName);

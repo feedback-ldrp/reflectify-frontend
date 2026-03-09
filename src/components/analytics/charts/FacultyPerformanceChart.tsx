@@ -22,13 +22,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { GraduationCap, Download, Users } from "lucide-react";
-import { FacultyOverallPerformanceSummary } from "@/interfaces/analytics";
+import { FacultyPerformanceAggregated } from "@/interfaces/analytics";
 import { DataTable, DataTableColumn } from "@/components/ui/DataTable";
 import { exportFacultyPerformanceData } from "@/utils/facultyPerformanceExport";
 import showToast from "@/lib/toast";
 
 interface FacultyPerformanceChartProps {
-    data: FacultyOverallPerformanceSummary[];
+    data: FacultyPerformanceAggregated[];
     isLoading?: boolean;
     showTop?: number;
     academicYearId?: string; // Add academic year ID for export
@@ -200,7 +200,7 @@ export const FacultyPerformanceChart: React.FC<
 
     // Define columns for the DataTable
     const facultyTableColumns: DataTableColumn<
-        FacultyOverallPerformanceSummary & { rank: number }
+        FacultyPerformanceAggregated & { rank: number }
     >[] = useMemo(
         () => [
             {
@@ -486,21 +486,21 @@ export const FacultyPerformanceChart: React.FC<
                                     fill={
                                         // Use direct hex for Recharts fill, not Tailwind class
                                         getRatingColor(entry.averageRating) ===
-                                        "green"
+                                            "green"
                                             ? "#10b981"
                                             : getRatingColor(
-                                                  entry.averageRating
-                                              ) === "blue"
-                                            ? "#3b82f6"
-                                            : getRatingColor(
-                                                  entry.averageRating
-                                              ) === "yellow"
-                                            ? "#f59e0b"
-                                            : getRatingColor(
-                                                  entry.averageRating
-                                              ) === "orange"
-                                            ? "#f97316"
-                                            : "#ef4444" // red
+                                                entry.averageRating
+                                            ) === "blue"
+                                                ? "#3b82f6"
+                                                : getRatingColor(
+                                                    entry.averageRating
+                                                ) === "yellow"
+                                                    ? "#f59e0b"
+                                                    : getRatingColor(
+                                                        entry.averageRating
+                                                    ) === "orange"
+                                                        ? "#f97316"
+                                                        : "#ef4444" // red
                                     }
                                 />
                             ))}

@@ -16,6 +16,7 @@ import {
     DivisionBatchComparison,
     LabLectureComparison,
     FacultyYearPerformance,
+    FacultyPerformanceAggregated,
     FacultyOverallPerformanceSummary,
     TotalResponsesCount,
     SemesterDivisionWithResponseCounts,
@@ -346,6 +347,28 @@ export interface OptimizedAnalyticsResponse {
         facultyCount: number;
         subjectCount: number;
     }>;
+    subjectFacultyPerformance: Array<{
+        subjectName: string;
+        subjectAbbreviation: string;
+        overallSubjectAverage: number | null;
+        overallSubjectResponses: number;
+        facultyData: Array<{
+            facultyId: string;
+            facultyName: string;
+            averageRating: number;
+            responseCount: number;
+        }>;
+    }>;
+    batchComparisons: Array<{
+        departmentId: string;
+        departmentName: string;
+        divisionId: string;
+        divisionName: string;
+        batch: string;
+        averageRating: number;
+        totalResponses: number;
+        engagementScore: number;
+    }>;
     academicYearTrends: Array<{
         academicYearId: string;
         academicYearString: string;
@@ -368,6 +391,14 @@ export interface OptimizedAnalyticsResponse {
         departmentData: Array<{
             departmentId: string;
             departmentName: string;
+            averageRating: number;
+            responseCount: number;
+        }>;
+    }>;
+    academicYearDivisionTrends: Array<{
+        academicYearString: string;
+        divisionData: Array<{
+            divisionName: string;
             averageRating: number;
             responseCount: number;
         }>;

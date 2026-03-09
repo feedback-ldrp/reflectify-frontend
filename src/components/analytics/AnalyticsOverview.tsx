@@ -15,8 +15,7 @@ interface OverallStats {
   uniqueSubjects: number;
   uniqueFaculties: number;
   uniqueStudents: number;
-  uniqueDepartments: number;
-  responseRate: number;
+  uniqueDivisions: number;
 }
 
 interface AnalyticsOverviewProps {
@@ -40,7 +39,7 @@ export const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
         icon={MessageSquare}
         isLoading={isLoading}
         // subtitle="Feedback submissions"
-        onClick={() => {}}
+        onClick={() => { }}
       />
 
       <StatCard
@@ -49,7 +48,7 @@ export const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
         icon={Star}
         isLoading={isLoading}
         // subtitle="Out of 10"
-        onClick={() => {}}
+        onClick={() => { }}
       />
 
       <StatCard
@@ -58,7 +57,7 @@ export const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
         icon={BarChart3}
         isLoading={isLoading}
         // subtitle="Being evaluated"
-        onClick={() => {}}
+        onClick={() => { }}
       />
 
       <StatCard
@@ -67,16 +66,16 @@ export const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
         icon={Users}
         isLoading={isLoading}
         // subtitle="Total educators"
-        onClick={() => {}}
+        onClick={() => { }}
       />
 
       <StatCard
-        title="Departments"
-        value={stats?.uniqueDepartments || 0}
+        title="Divisions"
+        value={stats?.uniqueDivisions || 0}
         icon={Target}
         isLoading={isLoading}
         // subtitle="Academic units"
-        onClick={() => {}}
+        onClick={() => { }}
       />
     </div>
   );

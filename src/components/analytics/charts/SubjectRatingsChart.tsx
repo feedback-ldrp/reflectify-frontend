@@ -20,10 +20,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { BookOpen, Monitor, Laptop, Download, ExternalLink } from "lucide-react";
-import { SubjectLectureLabRating } from "@/interfaces/analytics";
+import { SubjectRatingAggregated } from "@/interfaces/analytics";
 
 interface SubjectRatingsChartProps {
-    data: SubjectLectureLabRating[];
+    data: SubjectRatingAggregated[];
     isLoading?: boolean;
     onSubjectClick?: (subjectId: string, subjectName: string) => void;
 }
@@ -42,14 +42,13 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                     >
                         <div className="flex items-center gap-2">
                             <div
-                                className={`w-2 h-2 rounded-full ${
-                                    entry.color === "#f97316"
+                                className={`w-2 h-2 rounded-full ${entry.color === "#f97316"
                                         ? "bg-[#f97316]"
                                         : "bg-[#9ba2ae]"
-                                }`}
+                                    }`}
                             />
                             <span className="text-sm text-light-muted-text dark:text-dark-muted-text">
-                                {entry.dataKey === "lectureAverageRating"
+                                {entry.dataKey === "lectureRating"
                                     ? "Lecture"
                                     : "Lab"}
                                 :
@@ -60,12 +59,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                         </span>
                     </div>
                 ))}
-                {payload[0]?.payload?.totalOverallResponses && (
+                {payload[0]?.payload?.totalResponses && (
                     <div className="mt-3 pt-2 border-t border-light-secondary dark:border-dark-secondary">
                         <span className="text-xs text-light-muted-text dark:text-dark-muted-text">
                             Total Responses:{" "}
                             <span className="font-semibold text-light-text dark:text-dark-text">
-                                {payload[0].payload.totalOverallResponses}
+                                {payload[0].payload.totalResponses}
                             </span>
                         </span>
                     </div>
@@ -82,197 +81,29 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
     onSubjectClick,
 }) => {
     const chartData = useMemo(() => {
-        // Group data by subjectAbbreviation to aggregate multiple faculty entries for same subject
-        const subjectGroups = new Map<
-            string,
-            {
-                subjectId: string;
-                subject: string;
-                subjectName: string; // Add this
-                subjectAbbreviation: string;
-                lectureRatings: number[];
-                labRatings: number[];
-                overallRatings: number[];
-                totalLectureResponses: number;
-                totalLabResponses: number;
-                totalOverallResponses: number;
-                facultyNames: string[];
-            }
-        >();
-
-        data.forEach((item) => {
-            const key = item.subjectAbbreviation || item.subjectName;
-
-            if (!subjectGroups.has(key)) {
-                subjectGroups.set(key, {
-                    subjectId: item.subjectId as string,
-                    subject: item.subjectName, // Full subject name
-                    subjectName: item.subjectName, // Add this
-                    subjectAbbreviation:
-                        item.subjectAbbreviation || item.subjectName,
-                    lectureRatings: [],
-                    labRatings: [],
-                    overallRatings: [],
-                    totalLectureResponses: 0,
-                    totalLabResponses: 0,
-                    totalOverallResponses: 0,
-                    facultyNames: [],
-                });
-            }
-
-            const group = subjectGroups.get(key)!;
-
-            // Collect ratings (only non-null and > 0)
-            if (item.lectureAverageRating && item.lectureAverageRating > 0) {
-                group.lectureRatings.push(item.lectureAverageRating);
-            }
-            if (item.labAverageRating && item.labAverageRating > 0) {
-                group.labRatings.push(item.labAverageRating);
-            }
-            if (item.overallAverageRating && item.overallAverageRating > 0) {
-                group.overallRatings.push(item.overallAverageRating);
-            }
-
-            // Sum responses
-            group.totalLectureResponses += item.totalLectureResponses;
-            group.totalLabResponses += item.totalLabResponses;
-            group.totalOverallResponses += item.totalOverallResponses;
-
-            // Collect faculty names
-            if (
-                item.facultyName &&
-                !group.facultyNames.includes(item.facultyName)
-            ) {
-                group.facultyNames.push(item.facultyName);
-            }
-        });
-
-        // Convert to chart data format
-        return Array.from(subjectGroups.values())
-            .map((group) => ({
-                subjectId: group.subjectId, // Add subjectId for click handling
-                subject: group.subjectAbbreviation, // For display (abbreviation)
-                subjectName: group.subjectName, // Add full name for export
-                lectureAverageRating:
-                    group.lectureRatings.length > 0
-                        ? Number(
-                              (
-                                  group.lectureRatings.reduce(
-                                      (sum, r) => sum + r,
-                                      0
-                                  ) / group.lectureRatings.length
-                              ).toFixed(2)
-                          )
-                        : null,
-                labAverageRating:
-                    group.labRatings.length > 0
-                        ? Number(
-                              (
-                                  group.labRatings.reduce(
-                                      (sum, r) => sum + r,
-                                      0
-                                  ) / group.labRatings.length
-                              ).toFixed(2)
-                          )
-                        : null,
-                overallAverageRating:
-                    group.overallRatings.length > 0
-                        ? Number(
-                              (
-                                  group.overallRatings.reduce(
-                                      (sum, r) => sum + r,
-                                      0
-                                  ) / group.overallRatings.length
-                              ).toFixed(2)
-                          )
-                        : null,
-                totalLectureResponses: group.totalLectureResponses,
-                totalLabResponses: group.totalLabResponses,
-                totalOverallResponses: group.totalOverallResponses,
-                facultyName: group.facultyNames.join(", "), // Multiple faculties
-            }))
-            .sort(
-                (a, b) =>
-                    (b.overallAverageRating || 0) -
-                    (a.overallAverageRating || 0)
-            );
+        return data.map(item => ({
+            ...item,
+            subject: item.subjectAbbreviation || item.subjectName,
+        }));
     }, [data]);
 
     const stats = useMemo(() => {
-        // Group by subjectAbbreviation to get unique subjects
-        const subjectGroups = new Map<
-            string,
-            {
-                lectureRatings: number[];
-                labRatings: number[];
-                totalLectureResponses: number;
-                totalLabResponses: number;
-                totalOverallResponses: number;
-            }
-        >();
-
-        // Group data by subject abbreviation
-        data.forEach((item) => {
-            const key = item.subjectAbbreviation || item.subjectName;
-
-            if (!subjectGroups.has(key)) {
-                subjectGroups.set(key, {
-                    lectureRatings: [],
-                    labRatings: [],
-                    totalLectureResponses: 0,
-                    totalLabResponses: 0,
-                    totalOverallResponses: 0,
-                });
-            }
-
-            const group = subjectGroups.get(key)!;
-
-            // Add lecture rating if it exists and is > 0
-            if (item.lectureAverageRating && item.lectureAverageRating > 0) {
-                group.lectureRatings.push(item.lectureAverageRating);
-            }
-
-            // Add lab rating if it exists and is > 0
-            if (item.labAverageRating && item.labAverageRating > 0) {
-                group.labRatings.push(item.labAverageRating);
-            }
-
-            // Sum up responses
-            group.totalLectureResponses += item.totalLectureResponses;
-            group.totalLabResponses += item.totalLabResponses;
-            group.totalOverallResponses += item.totalOverallResponses;
-        });
-
-        // Calculate aggregated stats
-        const uniqueSubjects = subjectGroups.size;
         let totalLectureRatings = 0;
         let totalLabRatings = 0;
         let lectureRatingCount = 0;
         let labRatingCount = 0;
         let totalResponses = 0;
 
-        subjectGroups.forEach((group) => {
-            // Calculate average for this subject's lecture ratings
-            if (group.lectureRatings.length > 0) {
-                const subjectLectureAvg =
-                    group.lectureRatings.reduce(
-                        (sum, rating) => sum + rating,
-                        0
-                    ) / group.lectureRatings.length;
-                totalLectureRatings += subjectLectureAvg;
+        data.forEach((item) => {
+            if (item.lectureRating && item.lectureRating > 0) {
+                totalLectureRatings += item.lectureRating;
                 lectureRatingCount++;
             }
-
-            // Calculate average for this subject's lab ratings
-            if (group.labRatings.length > 0) {
-                const subjectLabAvg =
-                    group.labRatings.reduce((sum, rating) => sum + rating, 0) /
-                    group.labRatings.length;
-                totalLabRatings += subjectLabAvg;
+            if (item.labRating && item.labRating > 0) {
+                totalLabRatings += item.labRating;
                 labRatingCount++;
             }
-
-            totalResponses += group.totalOverallResponses;
+            totalResponses += item.totalResponses;
         });
 
         const avgLectureRating =
@@ -283,7 +114,7 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
             labRatingCount > 0 ? totalLabRatings / labRatingCount : 0;
 
         return {
-            totalSubjects: uniqueSubjects,
+            totalSubjects: data.length,
             avgLectureRating: Number(avgLectureRating.toFixed(2)),
             avgLabRating: Number(avgLabRating.toFixed(2)),
             totalResponses,
@@ -314,19 +145,19 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
                 [
                     `"${row.subjectName}"`,
                     `"${row.subject}"`,
-                    row.lectureAverageRating !== null
-                        ? row.lectureAverageRating
+                    row.lectureRating !== null
+                        ? row.lectureRating
                         : "N/A",
-                    row.labAverageRating !== null
-                        ? row.labAverageRating
+                    row.labRating !== null
+                        ? row.labRating
                         : "N/A",
-                    row.overallAverageRating !== null
-                        ? row.overallAverageRating
+                    row.overallRating !== null
+                        ? row.overallRating
                         : "N/A",
-                    row.totalLectureResponses,
-                    row.totalLabResponses,
-                    row.totalOverallResponses,
-                    `"${row.facultyName}"`,
+                    row.lectureResponses,
+                    row.labResponses,
+                    row.totalResponses,
+                    `"${row.facultyCount} faculties"`,
                 ].join(",")
             ),
         ].join("\n");
@@ -511,7 +342,7 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
                             )}
                         />
                         <Bar
-                            dataKey="lectureAverageRating"
+                            dataKey="lectureRating"
                             fill="#f97316"
                             name="Lecture Rating"
                             radius={[4, 4, 0, 0]}
@@ -524,7 +355,7 @@ export const SubjectRatingsChart: React.FC<SubjectRatingsChartProps> = ({
                             }}
                         />
                         <Bar
-                            dataKey="labAverageRating"
+                            dataKey="labRating"
                             fill="#3b82f6"
                             name="Lab Rating"
                             radius={[4, 4, 0, 0]}

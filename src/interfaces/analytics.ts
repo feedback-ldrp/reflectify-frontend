@@ -271,10 +271,40 @@ export interface FacultyYearPerformance {
 /**
  * Faculty overall performance summary (for top/lowest faculties).
  */
-export interface FacultyOverallPerformanceSummary {
-  facultyId: IdType;
+export interface FacultyPerformanceAggregated {
+  facultyId: string;
   facultyName: string;
-  academicYearId: IdType;
+  facultyAbbreviation: string;
+  designation: string;
+  averageRating: number;
+  totalResponses: number;
+  rank: number;
+  subjectCount: number;
+  divisionCount: number;
+}
+
+export interface SubjectRatingAggregated {
+  subjectId: string;
+  subjectName: string;
+  subjectAbbreviation: string;
+  subjectCode: string;
+  lectureRating: number | null;
+  labRating: number | null;
+  overallRating: number;
+  lectureResponses: number;
+  labResponses: number;
+  totalResponses: number;
+  facultyCount: number;
+  divisionCount: number;
+}
+
+/**
+ * Faculty overall performance summary (for top/lowest faculties).
+ */
+export interface FacultyOverallPerformanceSummary {
+  facultyId: string;
+  facultyName: string;
+  academicYearId: string;
   averageRating: number;
   totalResponses: number;
 }
