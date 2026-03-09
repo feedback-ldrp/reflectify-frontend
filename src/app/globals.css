@@ -114,6 +114,37 @@ body {
   }
 }
 
+/* Premium Design Utilities */
+.glass-card {
+  @apply bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl;
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(var(--color-primary-main-rgb), 0.3);
+}
+
+.bg-radial-glow {
+  background: radial-gradient(circle at center, var(--color-primary-main) 0%, transparent 70%);
+  opacity: 0.15;
+  filter: blur(80px);
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+@layer base {
+  :root {
+    --color-primary-main-rgb: 79, 70, 229; /* Approx match for primary main */
+  }
+}
+
 /* Hide scrollbar */
 ::-webkit-scrollbar {
   width: 0px;

@@ -82,15 +82,15 @@ export function Header() {
   return (
     <>
       <motion.header
-        initial="initial"
-        animate="animate"
-        variants={headerVariants}
-        className="bg-white dark:bg-dark-background border-b border-secondary-lighter dark:border-dark-secondary relative z-50"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed top-0 left-0 right-0 z-[100] bg-white/50 dark:bg-dark-background/50 backdrop-blur-2xl border-b border-white/10 dark:border-white/5"
       >
-        <nav className="mx-auto max-w-[1920px] px-6 py-4 flex items-center justify-between">
+        <nav className="mx-auto max-w-[1920px] px-6 py-5 flex items-center justify-between">
           {/* Logo / Site Title */}
           <motion.div
-            className="text-2xl font-bold whitespace-nowrap"
+            className="text-2xl font-bold"
             variants={logoVariants}
             initial="animate"
           >
@@ -105,7 +105,7 @@ export function Header() {
                   priority
                 />
                 <span className="lg:text-3xl md:text-xl font-bold">
-                  <span className="text-light-highlight dark:text-dark-highlight">
+                  <span className="text-primary-main dark:text-dark-highlight">
                     Reflectify
                   </span>
                 </span>

@@ -11,20 +11,23 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { Features } from "@/components/landing/Features";
 import { TechStack } from "@/components/landing/TechStack";
+import { StatsSection } from "@/components/landing/StatsSection";
 
 // Main content for the home page
 function HomePageContent() {
   return (
-    <div className="min-h-screen bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text flex flex-col">
+    <div className="min-h-screen bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text flex flex-col selection:bg-primary-main selection:text-white">
       {/* Header section */}
       <Header />
-      <div className="mx-auto px-16 py-6 md:py-20">
-        <HeroSection />
-        <Features />
-      </div>
-      <TechStack />
-      {/* Footer section */}
 
+      <main className="flex-grow w-screen">
+        <HeroSection />
+        <StatsSection />
+        <Features />
+        <TechStack />
+      </main>
+
+      {/* Footer section */}
       <Footer />
     </div>
   );

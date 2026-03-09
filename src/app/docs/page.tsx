@@ -40,7 +40,7 @@ const documentationSections = [
             "Performance optimization techniques",
         ],
         docsLink: "https://deepwiki.com/slantie/reflectify-frontend",
-        githubLink: "https://github.com/slantie/reflectify-frontend",
+        githubLink: "https://github.com/feedback-ce/reflectify-frontend",
         // Using your color system
         gradientFrom: "from-highlight1-main",
         gradientTo: "to-highlight1-dark",
@@ -67,7 +67,7 @@ const documentationSections = [
             "Performance monitoring and logging",
         ],
         docsLink: "https://deepwiki.com/slantie/reflectify-backend",
-        githubLink: "https://github.com/slantie/reflectify-backend",
+        githubLink: "https://github.com/feedback-ce/reflectify-backend",
         // Using your color system
         gradientFrom: "from-positive-main",
         gradientTo: "to-positive-dark",
@@ -93,7 +93,7 @@ const documentationSections = [
             "Monitoring and maintenance procedures",
         ],
         docsLink: "https://deepwiki.com/slantie/reflectify-server",
-        githubLink: "https://github.com/slantie/reflectify-server",
+        githubLink: "https://github.com/feedback-ce/reflectify-server",
         // Using your color system
         gradientFrom: "from-highlight2-main",
         gradientTo: "to-highlight2-dark",
@@ -108,227 +108,87 @@ const documentationSections = [
 export default function DocumentationPage() {
     const router = useRouter();
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.2,
-            },
-        },
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.6,
-                ease: "easeOut",
-            },
-        },
-    };
-
     return (
-        <>
-            <PublicRoute>
-                <Header />
-                <div
-                    suppressHydrationWarning
-                    className="max-w-[1920px] min-h-[92.5vh] flex mx-auto px-3 sm:px-6 py-4 sm:py-8 bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text"
-                >
-                    <div className="space-y-8 sm:space-y-12 lg:space-y-16">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 sm:gap-4">
-                            <button
-                                onClick={() => router.back()}
-                                className="p-1.5 sm:p-2 hover:bg-light-hover dark:hover:bg-dark-hover rounded-full transition-colors"
-                                title="Go back"
-                                aria-label="Go back"
-                            >
-                                <ArrowLeftIcon className="h-5 w-5 sm:h-6 sm:w-6 text-light-text dark:text-dark-tertiary" />
-                            </button>
-                            <h1 className="text-2xl sm:text-3xl font-semibold text-light-text dark:text-dark-text">
-                                Documentation
-                            </h1>
-                        </div>
+        <PublicRoute>
+            <Header />
+            <main className="min-h-screen bg-light-background dark:bg-dark-background pt-32 pb-20 overflow-hidden relative">
+                {/* Background Glows */}
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-main/5 blur-[120px] rounded-full -z-10" />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary-main/5 blur-[100px] rounded-full -z-10" />
 
-                        {/* Hero Section */}
-                        <div className="text-center px-4 sm:px-8 lg:px-16">
-                            <div className="min-w-[80vw] mx-auto">
-                                <h2 className="text-3xl  sm:text-4xl lg:text-5xl font-bold text-light-text dark:text-dark-text mb-4">
-                                    Comprehensive
-                                    <span className="text-primary-main dark:text-primary-light">
-                                        {" "}
-                                        Developer{" "}
-                                    </span>
-                                    Documentation
-                                </h2>
-                                <p className="text-lg sm:text-xl text-light-muted-text dark:text-dark-tertiary leading-relaxed min-w-[80vw]">
-                                    Everything you need to understand,
-                                    contribute to, and extend the Reflectify
-                                    platform. From frontend components to
-                                    backend APIs and server infrastructure.
-                                </p>
-                            </div>
-                        </div>
+                <div className="max-w-[1400px] mx-auto px-10">
+                    {/* Hero Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="mb-20 text-center md:text-left"
+                    >
+                        <h1 className="text-8xl md:text-9xl font-black text-light-highlight dark:text-dark-highlight tracking-tighter leading-[0.8] mb-8">
+                            Library.<br />
+                            <span className="text-light-text dark:text-dark-text opacity-50">Docs.</span>
+                        </h1>
+                        <p className="text-2xl text-light-muted-text dark:text-dark-muted-text max-w-2xl leading-relaxed mx-auto md:mx-0">
+                            Everything you need to understand, contribute to, and extend the Reflectify platform. Architecture, APIs, and beyond.
+                        </p>
+                    </motion.div>
 
-                        {/* Documentation Cards */}
-                        <div className="flex items-center justify-center">
+                    {/* Documentation Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        {documentationSections.map((section, index) => (
                             <motion.div
-                                variants={containerVariants}
-                                initial="hidden"
-                                animate="visible"
-                                className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 px-2 sm:px-6 lg:px-14"
+                                key={section.id}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.6, delay: index * 0.1 }}
+                                viewport={{ once: true }}
+                                className="glass-card group p-10 rounded-[3rem] border border-black/5 dark:border-white/5 hover:border-black/10 dark:hover:border-white/20 transition-all duration-500 flex flex-col justify-between h-full"
                             >
-                                {documentationSections.map(
-                                    (section, _index) => (
-                                        <motion.div
-                                            key={section.id}
-                                            variants={itemVariants}
-                                            className="group relative"
-                                        >
-                                            {/* Background gradient effect */}
-                                            <div
-                                                className={`absolute inset-0 bg-gradient-to-r ${section.gradientFrom} ${section.gradientTo} rounded-3xl transform transition-transform group-hover:translate-x-2 group-hover:translate-y-2 opacity-75`}
-                                            ></div>
+                                <div>
+                                    <div className="w-16 h-16 bg-primary-main/10 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary-main transition-colors duration-500">
+                                        <section.icon className="w-8 h-8 text-primary-main group-hover:text-white transition-colors" />
+                                    </div>
+                                    <h2 className="text-3xl font-black mb-4 tracking-tight">{section.title}</h2>
+                                    <p className="text-light-muted-text dark:text-dark-muted-text leading-relaxed mb-8">
+                                        {section.description}
+                                    </p>
 
-                                            {/* Main card */}
-                                            <div
-                                                className={`relative ${section.bgColor} rounded-3xl border ${section.borderColor} p-6 sm:p-8 h-full flex flex-col transition-all duration-300 group-hover:shadow-2xl`}
-                                            >
-                                                {/* Header */}
-                                                <div className="flex items-center gap-4 mb-6">
-                                                    <div
-                                                        className={`p-3 rounded-2xl bg-gradient-to-r ${section.gradientFrom} ${section.gradientTo}`}
-                                                    >
-                                                        <section.icon className="h-8 w-8 text-white" />
-                                                    </div>
-                                                    <h3 className="text-xl sm:text-2xl font-bold text-light-text dark:text-dark-text">
-                                                        {section.title}
-                                                    </h3>
-                                                </div>
+                                    <div className="space-y-4 mb-10">
+                                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary-main">Core Technologies</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {section.technologies.map((tech, i) => (
+                                                <span key={i} className="px-4 py-1.5 bg-white/5 rounded-full text-sm font-medium border border-white/5">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
 
-                                                {/* Description */}
-                                                <p className="text-light-muted-text dark:text-dark-tertiary mb-6 leading-relaxed flex-grow">
-                                                    {section.description}
-                                                </p>
-
-                                                {/* Technologies */}
-                                                <div className="mb-6">
-                                                    <h4 className="text-sm font-semibold text-secondary-main dark:text-dark-tertiary uppercase tracking-wide mb-3">
-                                                        Technologies
-                                                    </h4>
-                                                    <div className="flex items-center gap-3">
-                                                        {section.techIcons.map(
-                                                            (
-                                                                TechIcon,
-                                                                techIndex
-                                                            ) => (
-                                                                <TechIcon
-                                                                    key={
-                                                                        techIndex
-                                                                    }
-                                                                    className={`h-6 w-6 ${section.textColor} opacity-80`}
-                                                                />
-                                                            )
-                                                        )}
-                                                        <div className="flex flex-wrap gap-2">
-                                                            {section.technologies
-                                                                .slice(0, 2)
-                                                                .map(
-                                                                    (
-                                                                        tech,
-                                                                        techIndex
-                                                                    ) => (
-                                                                        <span
-                                                                            key={
-                                                                                techIndex
-                                                                            }
-                                                                            className={`px-2 py-1 ${section.bgColor} ${section.textColor} text-xs font-medium rounded-full border ${section.borderColor}`}
-                                                                        >
-                                                                            {
-                                                                                tech
-                                                                            }
-                                                                        </span>
-                                                                    )
-                                                                )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Features */}
-                                                <div className="mb-8">
-                                                    <h4 className="text-sm font-semibold text-secondary-main dark:text-dark-tertiary uppercase tracking-wide mb-3">
-                                                        What&apos;s Included
-                                                    </h4>
-                                                    <ul className="space-y-2">
-                                                        {section.features
-                                                            .slice(0, 3)
-                                                            .map(
-                                                                (
-                                                                    feature,
-                                                                    featureIndex
-                                                                ) => (
-                                                                    <li
-                                                                        key={
-                                                                            featureIndex
-                                                                        }
-                                                                        className="flex items-start gap-2"
-                                                                    >
-                                                                        <div
-                                                                            className={`w-1.5 h-1.5 rounded-full ${section.gradientFrom.replace(
-                                                                                "from-",
-                                                                                "bg-"
-                                                                            )} mt-2 flex-shrink-0`}
-                                                                        ></div>
-                                                                        <span className="text-sm text-light-muted-text dark:text-dark-tertiary">
-                                                                            {
-                                                                                feature
-                                                                            }
-                                                                        </span>
-                                                                    </li>
-                                                                )
-                                                            )}
-                                                    </ul>
-                                                </div>
-
-                                                {/* Action Buttons */}
-                                                <div className="flex flex-col sm:flex-row gap-3">
-                                                    <a
-                                                        href={section.docsLink}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r ${section.gradientFrom} ${section.gradientTo} text-white rounded-xl font-semibold hover:scale-[1.02] hover:shadow-lg transition-all duration-300 group/btn`}
-                                                    >
-                                                        <FaBook className="h-4 w-4" />
-                                                        <span>View Docs</span>
-                                                        <FaExternalLinkAlt className="h-3 w-3 opacity-75 group-hover/btn:opacity-100 transition-opacity" />
-                                                    </a>
-                                                    <a
-                                                        href={
-                                                            section.githubLink
-                                                        }
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 ${section.borderColor} ${section.textColor} ${section.hoverColor} rounded-xl font-semibold hover:scale-[1.02] transition-all duration-300 group/btn`}
-                                                    >
-                                                        <FaGithub className="h-4 w-4" />
-                                                        <span>GitHub</span>
-                                                        <FaExternalLinkAlt className="h-3 w-3 opacity-75 group-hover/btn:opacity-100 transition-opacity" />
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )
-                                )}
+                                <div className="space-y-4">
+                                    <a
+                                        href={section.docsLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-3 w-full h-14 bg-primary-main rounded-2xl text-white font-black text-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+                                    >
+                                        <FaBook size={18} /> View Docs
+                                    </a>
+                                    <a
+                                        href={section.githubLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center gap-3 w-full h-14 border border-white/10 rounded-2xl font-bold text-lg hover:bg-white/5 transition-all"
+                                    >
+                                        <FaGithub size={18} /> GitHub
+                                    </a>
+                                </div>
                             </motion.div>
-                        </div>
+                        ))}
                     </div>
                 </div>
-                <Footer />
-            </PublicRoute>
-        </>
+            </main>
+            <Footer />
+        </PublicRoute>
     );
 }

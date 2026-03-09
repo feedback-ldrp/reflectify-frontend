@@ -21,78 +21,32 @@ export function Footer() {
     return (
         <motion.footer
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white dark:bg-dark-background border-t border-secondary-lighter dark:border-dark-secondary"
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="bg-light-background dark:bg-dark-background border-t border-white/5 pt-20 pb-10"
         >
-            <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
-                <div className="flex items-center justify-between gap-4 sm:gap-12 py-12 sm:py-16">
+            <div className="mx-auto px-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
                     {/* Brand Section */}
-                    <div className="space-y-6 sm:col-span-2 lg:col-span-1 max-w-xl">
-                        <motion.div
-                            className="text-2xl sm:text-3xl font-bold"
-                            animate={{
-                                opacity: [0.8, 1, 0.8],
-                            }}
-                            transition={{
-                                duration: 3,
-                                ease: "easeInOut",
-                                repeat: Infinity,
-                            }}
-                        >
-                            <span className="text-light-highlight dark:text-dark-highlight">
-                                Reflectify: Coordinated Feedbacks
-                            </span>
-                        </motion.div>
-                        <p className="text-secondary-dark dark:text-dark-tertiary leading-relaxed text-sm sm:text-base">
-                            Empowering educational institutions with
-                            comprehensive feedback management solutions for a
-                            better learning experience.
-                        </p>
-                        <div className="flex space-x-4 sm:space-x-5">
-                            {[
-                                // { icon: Facebook, href: "#" },
-                                // { icon: Twitter, href: "#" },
-                                // { icon: Instagram, href: "#" },
-                                {
-                                    icon: Linkedin,
-                                    href: "https://www.linkedin.com/school/ldrp-institute-of-technology-research-gujarat-technological-university-india/",
-                                },
-                            ].map((social, index) => (
-                                <motion.a
-                                    key={index}
-                                    href={social.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    className="p-2 rounded-full bg-primary-lighter dark:bg-primary-darker/20 text-primary-dark dark:text-primary-light hover:bg-primary-lighter dark:hover:bg-primary-darker/30 transition-colors"
-                                >
-                                    <social.icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                                </motion.a>
-                            ))}
+                    <div className="space-y-8">
+                        <div className="text-3xl font-black text-light-highlight dark:text-dark-highlight tracking-tighter">
+                            Reflectify.
                         </div>
+                        <p className="text-light-muted-text dark:text-dark-muted-text leading-relaxed text-lg max-w-sm">
+                            Redefining academic feedback through transparency, anonymity, and data-driven insights. Built by students, for the future of education.
+                        </p>
                     </div>
 
                     {/* Quick Links */}
-                    <div className="space-y-4 sm:space-y-6">
-                        <h3 className="text-base sm:text-lg font-semibold text-secondary-darker dark:text-dark-text">
-                            Quick Links
+                    <div className="space-y-8">
+                        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-primary-main">
+                            Explore
                         </h3>
-                        <ul className="space-y-3 sm:space-y-4">
+                        <ul className="space-y-4">
                             {quickLinks.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href}>
-                                        <motion.span
-                                            className="text-sm sm:text-base text-secondary-dark dark:text-dark-tertiary hover:text-primary-dark dark:hover:text-primary-light cursor-pointer inline-block"
-                                            whileHover={{ x: 5 }}
-                                            transition={{
-                                                type: "spring",
-                                                stiffness: 300,
-                                            }}
-                                        >
-                                            {link.name}
-                                        </motion.span>
+                                    <Link href={link.href} className="text-lg text-light-text dark:text-dark-text opacity-60 hover:opacity-100 transition-opacity">
+                                        {link.name}
                                     </Link>
                                 </li>
                             ))}
@@ -100,49 +54,35 @@ export function Footer() {
                     </div>
 
                     {/* Contact Info */}
-                    <div className="space-y-4 sm:space-y-6">
-                        <h3 className="text-base sm:text-lg font-semibold text-secondary-darker dark:text-dark-text">
-                            Contact Us
+                    <div className="space-y-6">
+                        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-primary-main">
+                            Connect
                         </h3>
-                        <ul className="space-y-3 sm:space-y-4">
-                            <li className="flex items-start space-x-3">
-                                <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-primary-dark dark:text-primary-light mt-1 shrink-0" />
-                                <span className="text-sm sm:text-base text-secondary-dark dark:text-dark-tertiary break-all">
-                                    feedback_ce@ldrp.ac.in
-                                </span>
-                            </li>
-                            <li className="flex items-start space-x-3">
-                                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-primary-dark dark:text-primary-light mt-1 shrink-0" />
-                                <span className="text-sm sm:text-base text-secondary-dark dark:text-dark-tertiary">
-                                    LDRP Institute of Technology & Research,
-                                    <br />
-                                    Near KH-5, Sector-15,
-                                    <br />
+                        <div className="space-y-4">
+                            <a href="mailto:feedback_ce@ldrp.ac.in" className="flex items-center gap-4 group">
+                                <div className="p-3 bg-white/5 rounded-xl group-hover:bg-primary-main/20 transition-colors">
+                                    <Mail size={24} className="text-primary-main" />
+                                </div>
+                                <span className="text-lg opacity-60 group-hover:opacity-100 transition-opacity">feedback_ce@ldrp.ac.in</span>
+                            </a>
+                            <div className="flex items-center gap-4 group">
+                                <div className="p-3 bg-white/5 rounded-xl">
+                                    <MapPin size={24} className="text-primary-main" />
+                                </div>
+                                <span className="text-lg opacity-60 leading-tight">
+                                    LDRP Institute of Technology & Research,<br />
                                     Gandhinagar, Gujarat 382015
                                 </span>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-secondary-lighter dark:border-dark-secondary py-6 sm:py-8">
-                    <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 text-center sm:text-left">
-                        {typeof window !== "undefined" && (
-                            <p className="text-sm sm:text-base text-secondary-dark dark:text-dark-tertiary">
-                                © {currentYear} Reflectify. All rights reserved.
-                            </p>
-                        )}
-                        <a href="/about-us">
-                            <motion.p
-                                className="text-sm sm:text-base text-secondary-dark dark:text-dark-tertiary"
-                                whileHover={{ scale: 1.02 }}
-                            >
-                                Created by Team Reflectify (Kandarp Gajjar,
-                                Harsh Dodiya & Parin Dave)
-                            </motion.p>
-                        </a>
-                    </div>
+                <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-center items-center gap-6">
+                    <p className="text-sm opacity-40">
+                        © {currentYear} Reflectify. Some rights reserved.
+                    </p>
                 </div>
             </div>
         </motion.footer>

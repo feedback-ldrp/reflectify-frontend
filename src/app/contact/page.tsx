@@ -132,262 +132,142 @@ export default function ContactPage() {
   return (
     <PublicRoute>
       <Header />
-      <div className="bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text flex flex-col">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="min-h-screen bg-light-background dark:bg-dark-background pt-32 pb-20 overflow-hidden relative">
+        {/* Background Glows */}
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary-main/5 blur-[120px] rounded-full -z-10" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-secondary-main/5 blur-[100px] rounded-full -z-10" />
+
+        <div className="max-w-[1400px] mx-auto px-10">
           {/* Header Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            transition={{ duration: 0.8 }}
+            className="mb-12"
           >
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-light-highlight dark:text-dark-highlight mb-6">
-              Get in Touch
+            <h1 className="text-8xl md:text-9xl font-black text-light-highlight dark:text-dark-highlight tracking-tighter leading-[0.8] mb-8">
+              Get in.<br />
+              <span className="text-light-text dark:text-dark-text opacity-50">Touch.</span>
             </h1>
-            <p className="text-lg sm:text-xl text-light-text dark:text-dark-text mx-auto leading-relaxed">
-              Have questions or feedback? We&apos;d love to hear from you. Reach
-              out to us and let&apos;s start a conversation.
+            <p className="text-2xl text-light-muted-text dark:text-dark-muted-text max-w-xl leading-relaxed">
+              Have questions or feedback? We&apos;d love to hear from you. Reach out and let&apos;s start a conversation.
             </p>
           </motion.div>
 
-          <div className="grid lg:grid-cols-3 gap-12 lg:gap-16">
+          <div className="grid lg:grid-cols-12 gap-16 items-start">
             {/* Contact Form */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="lg:col-span-2"
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="lg:col-span-7"
             >
-              <div className="bg-light-muted dark:bg-dark-muted p-6 sm:p-8 rounded-3xl shadow-xl border border-light-secondary dark:border-dark-secondary">
-                <h2 className="text-2xl font-bold text-light-highlight dark:text-dark-highlight mb-6">
-                  Send us a message
-                </h2>
+              <div className="glass-card p-10 rounded-[3rem] border border-black/5 dark:border-white/5 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary-main/5 blur-[50px] -z-10" />
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Name and Email Row */}
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block text-sm font-semibold text-light-text dark:text-dark-text mb-2"
-                      >
-                        Name *
-                      </label>
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  <div className="grid sm:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold uppercase tracking-widest text-primary-main opacity-80 ml-1">Name</label>
                       <Input
-                        type="text"
-                        id="name"
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-3 bg-light-background dark:bg-dark-background border-2 rounded-xl text-light-text dark:text-dark-text transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-light-highlight dark:focus:ring-dark-highlight focus:border-transparent ${
-                          errors.name
-                            ? "border-red-500 dark:border-red-400"
-                            : "border-light-secondary dark:border-dark-secondary hover:border-light-highlight dark:hover:border-dark-highlight"
-                        }`}
-                        placeholder="Your full name"
-                        aria-invalid={errors.name ? "true" : "false"}
-                        aria-describedby={
-                          errors.name ? "name-error" : undefined
-                        }
+                        placeholder="John Doe"
+                        className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 rounded-2xl h-14 px-6 text-lg focus:ring-primary-main/50"
                       />
-                      {errors.name && (
-                        <p
-                          id="name-error"
-                          className="mt-1 text-sm text-red-600 dark:text-red-400"
-                        >
-                          {errors.name}
-                        </p>
-                      )}
+                      {errors.name && <p className="text-red-500 text-xs mt-1 ml-1">{errors.name}</p>}
                     </div>
-
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-sm font-semibold text-light-text dark:text-dark-text mb-2"
-                      >
-                        Email *
-                      </label>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold uppercase tracking-widest text-primary-main opacity-80 ml-1">Email</label>
                       <Input
-                        type="email"
-                        id="email"
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-3 bg-light-background dark:bg-dark-background border-2 rounded-xl text-light-text dark:text-dark-text transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-light-highlight dark:focus:ring-dark-highlight focus:border-transparent ${
-                          errors.email
-                            ? "border-red-500 dark:border-red-400"
-                            : "border-light-secondary dark:border-dark-secondary hover:border-light-highlight dark:hover:border-dark-highlight"
-                        }`}
-                        placeholder="your.email@example.com"
-                        aria-invalid={errors.email ? "true" : "false"}
-                        aria-describedby={
-                          errors.email ? "email-error" : undefined
-                        }
+                        placeholder="john@example.com"
+                        className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 rounded-2xl h-14 px-6 text-lg focus:ring-primary-main/50"
                       />
-                      {errors.email && (
-                        <p
-                          id="email-error"
-                          className="mt-1 text-sm text-red-600 dark:text-red-400"
-                        >
-                          {errors.email}
-                        </p>
-                      )}
+                      {errors.email && <p className="text-red-500 text-xs mt-1 ml-1">{errors.email}</p>}
                     </div>
                   </div>
 
-                  {/* Subject */}
-                  <div>
-                    <label
-                      htmlFor="subject"
-                      className="block text-sm font-semibold text-light-text dark:text-dark-text mb-2"
-                    >
-                      Subject *
-                    </label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold uppercase tracking-widest text-primary-main opacity-80 ml-1">Subject</label>
                     <Input
-                      type="text"
-                      id="subject"
                       name="subject"
                       value={formData.subject}
                       onChange={handleInputChange}
-                      className={`w-full px-4 py-3 bg-light-background dark:bg-dark-background border-2 rounded-xl text-light-text dark:text-dark-text transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-light-highlight dark:focus:ring-dark-highlight focus:border-transparent ${
-                        errors.subject
-                          ? "border-red-500 dark:border-red-400"
-                          : "border-light-secondary dark:border-dark-secondary hover:border-light-highlight dark:hover:border-dark-highlight"
-                      }`}
-                      placeholder="What's this about?"
-                      aria-invalid={errors.subject ? "true" : "false"}
-                      aria-describedby={
-                        errors.subject ? "subject-error" : undefined
-                      }
+                      placeholder="How can we help?"
+                      className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 rounded-2xl h-14 px-6 text-lg focus:ring-primary-main/50"
                     />
-                    {errors.subject && (
-                      <p
-                        id="subject-error"
-                        className="mt-1 text-sm text-red-600 dark:text-red-400"
-                      >
-                        {errors.subject}
-                      </p>
-                    )}
+                    {errors.subject && <p className="text-red-500 text-xs mt-1 ml-1">{errors.subject}</p>}
                   </div>
 
-                  {/* Message */}
-                  <div>
-                    <label
-                      htmlFor="message"
-                      className="block text-sm font-semibold text-light-text dark:text-dark-text mb-2"
-                    >
-                      Message *
-                    </label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold uppercase tracking-widest text-primary-main opacity-80 ml-1">Message</label>
                     <Textarea
-                      id="message"
                       name="message"
                       value={formData.message}
                       onChange={handleInputChange}
                       rows={6}
-                      className={`w-full px-4 py-3 bg-light-background dark:bg-dark-background border-2 rounded-xl text-light-text dark:text-dark-text transition-all duration-200 resize-none focus:outline-none focus:ring-2 focus:ring-light-highlight dark:focus:ring-dark-highlight focus:border-transparent ${
-                        errors.message
-                          ? "border-red-500 dark:border-red-400"
-                          : "border-light-secondary dark:border-dark-secondary hover:border-light-highlight dark:hover:border-dark-highlight"
-                      }`}
-                      placeholder="Tell us more about your inquiry..."
-                      aria-invalid={errors.message ? "true" : "false"}
-                      aria-describedby={
-                        errors.message ? "message-error" : undefined
-                      }
+                      placeholder="Your message here..."
+                      className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 rounded-[2rem] p-6 text-lg focus:ring-primary-main/50 resize-none"
                     />
-                    {errors.message && (
-                      <p
-                        id="message-error"
-                        className="mt-1 text-sm text-red-600 dark:text-red-400"
-                      >
-                        {errors.message}
-                      </p>
-                    )}
-                    <p className="mt-2 text-sm text-light-text/70 dark:text-dark-text/70">
-                      {formData.message.length}/500 characters
-                    </p>
+                    {errors.message && <p className="text-red-500 text-xs mt-1 ml-1">{errors.message}</p>}
                   </div>
 
-                  {/* Submit Button */}
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-light-highlight to-light-highlight/90 dark:from-dark-highlight dark:to-dark-highlight/90 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full h-16 bg-primary-main rounded-[2rem] text-white font-black text-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_20px_50px_rgba(79,70,229,0.3)] disabled:opacity-50"
                   >
-                    {isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Sending...
-                      </div>
-                    ) : (
-                      "Send Message"
-                    )}
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </button>
                 </form>
               </div>
             </motion.div>
 
-            {/* Contact Information */}
+            {/* Contact Info */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="space-y-4"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="lg:col-span-5 space-y-8"
             >
-              <div className="bg-light-muted dark:bg-dark-muted p-6 sm:p-8 rounded-3xl shadow-xl border border-light-secondary dark:border-dark-secondary">
-                <h2 className="text-2xl font-bold text-light-highlight dark:text-dark-highlight mb-6">
-                  Contact Information
-                </h2>
-                <div className="space-y-6">
+              <div className="glass-card p-10 rounded-[3rem] border border-black/5 dark:border-white/5">
+                <h2 className="text-3xl font-black mb-10 text-glow">Connect.</h2>
+                <div className="space-y-10">
                   {contactInfo.map((info, index) => (
-                    <motion.a
+                    <a
                       key={index}
                       href={info.href}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        duration: 0.4,
-                        delay: 0.6 + index * 0.1,
-                      }}
-                      className="flex items-start gap-4 p-4 rounded-lg hover:bg-light-background dark:hover:bg-dark-background transition-all duration-200 group"
+                      className="flex items-start gap-6 group"
                     >
-                      <div className="flex-shrink-0 w-12 h-12 bg-light-highlight dark:bg-dark-highlight rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                        <info.icon className="h-6 w-6 text-white" />
+                      <div className="w-14 h-14 bg-primary-main/10 rounded-2xl flex items-center justify-center group-hover:bg-primary-main transition-colors duration-500">
+                        <info.icon className="w-7 h-7 text-primary-main group-hover:text-white transition-colors" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-light-text dark:text-dark-text mb-1">
-                          {info.label}
-                        </h3>
-                        <p className="text-light-text/70 dark:text-dark-text/70 group-hover:text-light-highlight dark:group-hover:text-dark-highlight transition-colors duration-200">
+                        <p className="text-sm font-bold uppercase tracking-widest text-primary-main mb-1">{info.label}</p>
+                        <p className="text-xl font-bold opacity-80 group-hover:opacity-100 transition-opacity leading-snug">
                           {info.value}
                         </p>
                       </div>
-                    </motion.a>
+                    </a>
                   ))}
                 </div>
               </div>
 
-              {/* Response Time */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-                className="bg-gradient-to-br from-light-highlight/10 to-light-highlight/5 dark:from-dark-highlight/10 dark:to-dark-highlight/5 p-6 rounded-2xl border border-light-highlight/20 dark:border-dark-highlight/20"
-              >
-                <h3 className="text-lg font-semibold text-light-highlight dark:text-dark-highlight mb-3">
-                  Quick Response
-                </h3>
-                <p className="text-sm text-light-text/80 dark:text-dark-text/80">
-                  We typically respond to all inquiries within 24 hours during
-                  business days.
+              <div className="glass-card p-10 rounded-[3rem] border border-black/5 dark:border-white/5 bg-gradient-to-br from-primary-main/5 to-transparent">
+                <h3 className="text-xl font-bold mb-4">Quick Response</h3>
+                <p className="text-light-muted-text dark:text-dark-muted-text leading-relaxed">
+                  Our team typically responds to all inquiries within 24 hours during business days. We value your feedback and look forward to hearing from you.
                 </p>
-              </motion.div>
+              </div>
             </motion.div>
           </div>
         </div>
-
-        <Footer />
-      </div>
+      </main>
+      <Footer />
     </PublicRoute>
   );
 }
