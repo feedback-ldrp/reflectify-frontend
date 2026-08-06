@@ -311,6 +311,7 @@ export interface OptimizedAnalyticsResponse {
         uniqueFaculties: number;
         uniqueStudents: number;
         uniqueDivisions: number;
+        uniqueDepartments: number;
     };
     subjectRatings: Array<{
         subjectId: string;
@@ -340,6 +341,7 @@ export interface OptimizedAnalyticsResponse {
     divisionPerformance: Array<{
         divisionId: string;
         divisionName: string;
+        departmentId: string;
         departmentName: string;
         semesterNumber: number;
         averageRating: number;

@@ -7,7 +7,7 @@
 export const API_ENV = process.env.NEXT_PUBLIC_API_ENV || "production";
 
 export const NEXT_PUBLIC_BACKEND_DEV_URL =
-    process.env.NEXT_PUBLIC_BACKEND_DEV_URL || "http://localhost:4000";
+    process.env.NEXT_PUBLIC_BACKEND_DEV_URL || "http://localhost:4400";
 
 export const NEXT_PUBLIC_BACKEND_API_URL =
     process.env.NEXT_PUBLIC_BACKEND_API_URL ||

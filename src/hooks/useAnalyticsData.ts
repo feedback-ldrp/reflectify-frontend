@@ -108,92 +108,152 @@ export interface ProcessedAnalyticsData {
 // Processed analytics data hook
 export const useProcessedAnalytics = (filters: AnalyticsFilterParams = {}) => {
     const {
-        data: rawData,
+        data: optimizedData,
         isLoading,
         error,
         refetch,
-    } = useCompleteAnalyticsData(filters); // Assuming this hook fetches the full BackendData
+    } = useOptimizedAnalyticsData(filters);
 
-    // Memoize processed analytics data
+    // Keep the trends page's established view model while consuming the
+    // server-side aggregates. This prevents the page from downloading and
+    // processing every feedback snapshot in the browser.
     const processedData = useMemo<ProcessedAnalyticsData | null>(() => {
-        if (!rawData || !rawData.feedbackSnapshots) {
-            return {
-                overallStats: null,
-                subjectRatings: [],
-                semesterTrends: [],
-                divisionComparisons: [],
-                facultyPerformance: [],
-                lectureLabComparison: null,
-                filteringOptions: null,
-                rawSnapshots: [],
-                academicYearDepartmentTrends: [],
-                academicYearSemesterTrends: [],
-                academicYearDivisionPerformance: [],
-                batchComparisons: [], // Initialize the new property
-                subjectFacultyPerformance: [],
-                subjectFacultyDetailPerformance: null,
-            };
-        }
+        if (!optimizedData) return null;
 
-        const snapshots = rawData.feedbackSnapshots;
+        const subjectRatings = optimizedData.subjectRatings.map((subject) => ({
+            subjectId: subject.subjectId,
+            subjectName: subject.subjectName,
+            subjectAbbreviation: subject.subjectAbbreviation || "",
+            lectureAverageRating: subject.lectureRating,
+            labAverageRating: subject.labRating,
+            overallAverageRating: subject.overallRating,
+            totalLectureResponses: subject.lectureResponses,
+            totalLabResponses: subject.labResponses,
+            totalOverallResponses: subject.totalResponses,
+        }));
 
-        // Determine if a single division is selected by its ID
-        const isSingleDivisionIdSelected =
-            filters.divisionId && typeof filters.divisionId === "string";
+        const facultyPerformance = optimizedData.facultyPerformance.map(
+            (faculty) => ({
+                facultyId: faculty.facultyId,
+                facultyName: faculty.facultyName,
+                academicYearId: filters.academicYearId || "all",
+                averageRating: faculty.averageRating,
+                totalResponses: faculty.totalResponses,
+            })
+        );
 
-        // Filter snapshots for a specific division if one is selected for batch comparison
-        const filteredSnapshotsForBatchComparison = isSingleDivisionIdSelected
-            ? snapshots.filter((s) => s.divisionId === filters.divisionId)
-            : [];
-
-        // Determine if a single subject is selected by its ID
-        const isSingleSubjectIdSelected =
-            filters.subjectId && typeof filters.subjectId === "string";
-
-        const processedResult: ProcessedAnalyticsData = {
-            overallStats: AnalyticsDataProcessor.processOverallStats(snapshots),
-            subjectRatings:
-                AnalyticsDataProcessor.processSubjectRatings(snapshots),
-            divisionComparisons:
-                AnalyticsDataProcessor.processDivisionComparisons(snapshots),
-            facultyPerformance:
-                AnalyticsDataProcessor.processFacultyPerformance(snapshots),
-            lectureLabComparison:
-                AnalyticsDataProcessor.processLectureLabComparison(snapshots),
-            filteringOptions:
-                AnalyticsDataProcessor.getFilteringOptions(snapshots),
-            rawSnapshots: snapshots,
-            academicYearDepartmentTrends:
-                AnalyticsDataProcessor.processAcademicYearDepartmentTrends(
-                    snapshots
+        const divisionComparisons = optimizedData.divisionPerformance.map(
+            (division) => ({
+                departmentId: division.departmentId,
+                departmentName: division.departmentName,
+                divisionId: division.divisionId,
+                divisionName: division.divisionName,
+                batch: "all",
+                averageRating: division.averageRating,
+                totalResponses: division.totalResponses,
+                engagementScore: Math.min(
+                    10,
+                    Math.round(division.totalResponses / 5)
                 ),
-            academicYearSemesterTrends:
-                AnalyticsDataProcessor.processAcademicYearSemesterTrends(
-                    snapshots
-                ),
-            academicYearDivisionPerformance:
-                AnalyticsDataProcessor.processAcademicYearDivisionTrends(
-                    snapshots
-                ),
-            batchComparisons: AnalyticsDataProcessor.processDivisionComparisons(
-                filteredSnapshotsForBatchComparison
-            ),
-            subjectFacultyPerformance:
-                AnalyticsDataProcessor.processSubjectFacultyPerformance(
-                    snapshots
-                ),
-            subjectFacultyDetailPerformance: isSingleSubjectIdSelected
-                ? AnalyticsDataProcessor.processSubjectFacultyDetailPerformance(
-                      snapshots,
-                      filters.subjectId as string
-                  )
-                : null,
+            })
+        );
+
+        const academicYearSemesterTrends = optimizedData.semesterTrends.map(
+            (trend) => ({
+                semesterNumber: trend.semesterNumber,
+                academicYearData: trend.academicYearData.map((year) => ({
+                    academicYearString: year.academicYearString,
+                    averageRating: year.averageRating,
+                    responseCount: year.responseCount,
+                })),
+            })
+        );
+
+        const academicYearDepartmentTrends = optimizedData.departmentTrends.map(
+            (trend) => ({
+                academicYearString: trend.academicYearString,
+                departmentData: trend.departmentData.map((department) => ({
+                    departmentName: department.departmentName,
+                    averageRating: department.averageRating,
+                    responseCount: department.responseCount,
+                })),
+            })
+        );
+
+        const academicYearDivisionPerformance =
+            optimizedData.academicYearDivisionTrends.map((trend) => ({
+                academicYearString: trend.academicYearString,
+                divisionData: trend.divisionData.map((division) => ({
+                    divisionName: division.divisionName,
+                    averageRating: division.averageRating,
+                    responseCount: division.responseCount,
+                })),
+            }));
+
+        const lectureResponses = subjectRatings.reduce(
+            (total, subject) => total + subject.totalLectureResponses,
+            0
+        );
+        const labResponses = subjectRatings.reduce(
+            (total, subject) => total + subject.totalLabResponses,
+            0
+        );
+        const lectureRatingTotal = subjectRatings.reduce(
+            (total, subject) =>
+                total +
+                (subject.lectureAverageRating || 0) *
+                    subject.totalLectureResponses,
+            0
+        );
+        const labRatingTotal = subjectRatings.reduce(
+            (total, subject) =>
+                total +
+                (subject.labAverageRating || 0) * subject.totalLabResponses,
+            0
+        );
+
+        const lectureLabComparison = {
+            lectureAverageRating:
+                lectureResponses > 0
+                    ? Number((lectureRatingTotal / lectureResponses).toFixed(2))
+                    : 0,
+            labAverageRating:
+                labResponses > 0
+                    ? Number((labRatingTotal / labResponses).toFixed(2))
+                    : 0,
+            totalLectureResponses: lectureResponses,
+            totalLabResponses: labResponses,
         };
 
-        return processedResult;
-    }, [rawData, filters.divisionId, filters.subjectId]);
+        return {
+            overallStats: {
+                ...optimizedData.overallStats,
+                responseRate:
+                    optimizedData.overallStats.totalResponses > 0 ? 100 : 0,
+            },
+            subjectRatings,
+            divisionComparisons,
+            facultyPerformance,
+            lectureLabComparison,
+            filteringOptions: null,
+            rawSnapshots: [],
+            academicYearDepartmentTrends,
+            academicYearSemesterTrends,
+            academicYearDivisionPerformance,
+            batchComparisons: optimizedData.batchComparisons,
+            subjectFacultyPerformance:
+                optimizedData.subjectFacultyPerformance,
+            subjectFacultyDetailPerformance: null,
+        };
+    }, [optimizedData, filters.academicYearId]);
 
-    return { data: processedData, rawData, isLoading, error, refetch };
+    return {
+        data: processedData,
+        rawData: optimizedData,
+        isLoading,
+        error,
+        refetch,
+    };
 };
 
 // Analytics cache invalidation actions
@@ -226,13 +286,15 @@ export const useAnalyticsActions = () => {
 // These hooks use the new backend endpoints that return pre-aggregated data
 
 // Fetch optimized (pre-aggregated) analytics data - recommended for new implementations
-export const useOptimizedAnalyticsData = (filters: AnalyticsFilterParams = {}) => {
+export function useOptimizedAnalyticsData(
+    filters: AnalyticsFilterParams = {}
+) {
     return useQuery<OptimizedAnalyticsResponse>({
         queryKey: ANALYTICS_KEYS.optimizedData(filters),
         queryFn: () => analyticsService.getOptimizedAnalyticsData(filters),
         staleTime: 0, // Real-time data as requested
     });
-};
+}
 
 // Fetch subject detailed analytics for drill-down
 export const useSubjectDetailedAnalytics = (
@@ -373,4 +435,3 @@ export const useAnalyticsDrillDown = (filters?: AnalyticsFilterParams) => {
         filters,
     };
 };
-
