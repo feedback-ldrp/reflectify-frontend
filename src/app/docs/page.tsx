@@ -111,7 +111,7 @@ export default function DocumentationPage() {
     return (
         <PublicRoute>
             <Header />
-            <main className="min-h-screen bg-light-background dark:bg-dark-background pt-32 pb-20 overflow-hidden relative">
+            <main className="min-h-screen bg-light-background dark:bg-dark-background pt-16 pb-20 overflow-hidden relative">
                 {/* Background Glows */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-main/5 blur-[120px] rounded-full -z-10" />
                 <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-secondary-main/5 blur-[100px] rounded-full -z-10" />

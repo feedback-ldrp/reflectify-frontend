@@ -85,7 +85,7 @@ export function Header() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-0 left-0 right-0 z-[100] bg-white/50 dark:bg-dark-background/50 backdrop-blur-2xl border-b border-white/10 dark:border-white/5"
+        className="sticky top-0 z-[100] bg-white/50 dark:bg-dark-background/50 backdrop-blur-2xl border-b border-white/10 dark:border-white/5"
       >
         <nav className="mx-auto max-w-[1920px] px-6 py-5 flex items-center justify-between">
           {/* Logo / Site Title */}

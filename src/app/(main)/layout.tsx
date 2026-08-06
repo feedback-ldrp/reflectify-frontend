@@ -32,9 +32,7 @@ export default function MainGroupLayout({
   return (
     <ProtectedRoute requireAuth={true}>
       <div className="min-h-screen flex flex-col">
-        <div className="sticky top-0 z-50 bg-white dark:bg-dark-background border-b border-secondary-lighter dark:border-dark-secondary">
-          <Header />
-        </div>
+        <Header />
         <div className="flex flex-1">
           <Sidebar />
           <main className="flex-1 overflow-auto">
