@@ -179,6 +179,7 @@ export interface SubjectLectureLabRating {
   totalLectureResponses: number;
   totalLabResponses: number;
   totalOverallResponses: number;
+  uniqueStudents?: number;
 }
 
 export interface AcademicYearDepartmentTrend {
@@ -187,6 +188,7 @@ export interface AcademicYearDepartmentTrend {
     departmentName: string;
     averageRating: number;
     responseCount: number;
+    uniqueStudents?: number;
   }[];
 }
 
@@ -196,6 +198,7 @@ export interface AcademicYearSemesterTrend {
     academicYearString: string;
     averageRating: number;
     responseCount: number;
+    uniqueStudents?: number;
   }[];
 }
 
@@ -205,6 +208,7 @@ export interface AcademicYearDivisionTrend {
     divisionName: string;
     averageRating: number;
     responseCount: number;
+    uniqueStudents?: number;
   }[];
 }
 
@@ -219,6 +223,7 @@ export interface DivisionBatchComparison {
   batch: string;
   averageRating: number;
   totalResponses: number;
+  uniqueStudents?: number;
   engagementScore?: number;
 }
 

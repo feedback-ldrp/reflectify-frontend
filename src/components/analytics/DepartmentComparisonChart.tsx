@@ -56,7 +56,7 @@ export const DepartmentComparisonChart: React.FC<
       ...item,
       engagementScore:
         item.engagementScore ||
-        ((item.averageRating / 5) * 0.7 +
+        ((item.averageRating / 10) * 0.7 +
           (item.responseCount / maxResponses) * 0.3) *
           100,
     }))
@@ -116,7 +116,7 @@ export const DepartmentComparisonChart: React.FC<
       intersect: false,
       y: [
         {
-          formatter: (value: number) => `${value.toFixed(2)}/5.0`,
+          formatter: (value: number) => `${value.toFixed(2)}/10.0`,
         },
         {
           formatter: (value: number) => `${value.toLocaleString()} responses`,

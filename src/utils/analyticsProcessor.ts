@@ -29,7 +29,7 @@ export const parseResponseValue = (responseValue: any): number | null => {
       typeof responseValue.score === "number" ? responseValue.score : null;
   }
 
-  // Convert from 0-5 scale to 0-10 scale, but keep zero as zero
+  // Ratings are stored on a 0-10 scale; keep zero as zero
   return value !== null ? (value === 0 ? 0 : value) : null;
 };
 

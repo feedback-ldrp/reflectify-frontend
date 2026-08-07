@@ -324,6 +324,7 @@ export interface OptimizedAnalyticsResponse {
         lectureResponses: number;
         labResponses: number;
         totalResponses: number;
+        uniqueStudents: number;
         facultyCount: number;
         divisionCount: number;
     }>;
@@ -334,6 +335,7 @@ export interface OptimizedAnalyticsResponse {
         designation: string;
         averageRating: number;
         totalResponses: number;
+        uniqueStudents: number;
         rank: number;
         subjectCount: number;
         divisionCount: number;
@@ -346,6 +348,7 @@ export interface OptimizedAnalyticsResponse {
         semesterNumber: number;
         averageRating: number;
         totalResponses: number;
+        uniqueStudents: number;
         facultyCount: number;
         subjectCount: number;
     }>;
@@ -354,11 +357,13 @@ export interface OptimizedAnalyticsResponse {
         subjectAbbreviation: string;
         overallSubjectAverage: number | null;
         overallSubjectResponses: number;
+        uniqueStudents: number;
         facultyData: Array<{
             facultyId: string;
             facultyName: string;
             averageRating: number;
             responseCount: number;
+            uniqueStudents: number;
         }>;
     }>;
     batchComparisons: Array<{
@@ -369,6 +374,7 @@ export interface OptimizedAnalyticsResponse {
         batch: string;
         averageRating: number;
         totalResponses: number;
+        uniqueStudents: number;
         engagementScore: number;
     }>;
     academicYearTrends: Array<{
@@ -376,6 +382,7 @@ export interface OptimizedAnalyticsResponse {
         academicYearString: string;
         averageRating: number;
         totalResponses: number;
+        uniqueStudents: number;
         departmentCount: number;
         divisionCount: number;
     }>;
@@ -386,6 +393,7 @@ export interface OptimizedAnalyticsResponse {
             academicYearString: string;
             averageRating: number;
             responseCount: number;
+            uniqueStudents: number;
         }>;
     }>;
     departmentTrends: Array<{
@@ -395,6 +403,7 @@ export interface OptimizedAnalyticsResponse {
             departmentName: string;
             averageRating: number;
             responseCount: number;
+            uniqueStudents: number;
         }>;
     }>;
     academicYearDivisionTrends: Array<{
@@ -403,6 +412,7 @@ export interface OptimizedAnalyticsResponse {
             divisionName: string;
             averageRating: number;
             responseCount: number;
+            uniqueStudents: number;
         }>;
     }>;
     filters: {

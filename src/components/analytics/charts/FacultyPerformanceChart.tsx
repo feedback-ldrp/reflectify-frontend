@@ -176,9 +176,9 @@ export const FacultyPerformanceChart: React.FC<
             rank: sortedByRating.length,
         };
 
-        // Find faculty who need improvement (rating < 4.0 on 0-10 scale)
+        // Find faculty who need improvement (rating < 7.0 on 0-10 scale)
         const needsImprovement = data.filter(
-            (f) => f.averageRating < 4.0
+            (f) => f.averageRating < 7.0
         ).length;
         const excellentPerformers = data.filter(
             (f) => f.averageRating >= 9.0
@@ -543,7 +543,7 @@ export const FacultyPerformanceChart: React.FC<
                             {stats!.needsImprovement}
                         </div>
                         <div className="text-md text-light-muted-text dark:text-dark-muted-text">
-                            Poor Performers (4.0 and below)
+                            Poor Performers (below 7.0)
                         </div>
                     </div>
                     <div className="text-center">

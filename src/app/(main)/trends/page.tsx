@@ -83,7 +83,7 @@ const HealthScoreRing: React.FC<{
   score: number;
   maxScore?: number;
   size?: number;
-}> = ({ score, maxScore = 5, size = 140 }) => {
+}> = ({ score, maxScore = 10, size = 140 }) => {
   const percentage = (score / maxScore) * 100;
   const strokeWidth = 10;
   const radius = (size - strokeWidth) / 2;
@@ -385,7 +385,7 @@ const HeatmapCell: React.FC<{
   value: number;
   maxValue?: number;
   label?: string;
-}> = ({ value, maxValue = 5, label }) => {
+}> = ({ value, maxValue = 10, label }) => {
   const intensity = value / maxValue;
   const bgColor =
     intensity >= 0.8
@@ -862,25 +862,25 @@ const TrendsDashboard: React.FC = () => {
     }));
 
     // Faculty distribution - Using design system colors
-    const excellent = facultyData.filter((f) => f.averageRating >= 4.5).length;
+    const excellent = facultyData.filter((f) => f.averageRating >= 9.0).length;
     const good = facultyData.filter(
-      (f) => f.averageRating >= 4.0 && f.averageRating < 4.5,
+      (f) => f.averageRating >= 8.0 && f.averageRating < 9.0,
     ).length;
     const average = facultyData.filter(
-      (f) => f.averageRating >= 3.5 && f.averageRating < 4.0,
+      (f) => f.averageRating >= 7.0 && f.averageRating < 8.0,
     ).length;
-    const needsWork = facultyData.filter((f) => f.averageRating < 3.5).length;
+    const needsWork = facultyData.filter((f) => f.averageRating < 7.0).length;
 
     const facultyDistribution = [
       {
-        label: "Excellent (4.5+)",
+        label: "Excellent (9.0+)",
         value: excellent,
         color: "bg-positive-main",
       },
-      { label: "Good (4.0-4.5)", value: good, color: "bg-highlight1-main" },
-      { label: "Average (3.5-4.0)", value: average, color: "bg-warning-main" },
+      { label: "Good (8.0-9.0)", value: good, color: "bg-highlight1-main" },
+      { label: "Average (7.0-8.0)", value: average, color: "bg-warning-main" },
       {
-        label: "Needs Improvement (<3.5)",
+        label: "Needs Improvement (<7.0)",
         value: needsWork,
         color: "bg-negative-main",
       },
@@ -963,7 +963,7 @@ const TrendsDashboard: React.FC = () => {
       insights.push({
         priority: needsWork > 3 ? "high" : "medium",
         title: `${needsWork} Faculty Need Attention`,
-        description: `${percentage}% of faculty have ratings below 3.5. Consider mentoring programs.`,
+        description: `${percentage}% of faculty have ratings below 7.0. Consider mentoring programs.`,
         action: "View Details",
       });
     }
@@ -983,7 +983,7 @@ const TrendsDashboard: React.FC = () => {
       insights.push({
         priority: "low",
         title: "Strong Faculty Performance",
-        description: `${Math.round((excellent / facultyData.length) * 100)}% of faculty have excellent ratings (4.5+).`,
+        description: `${Math.round((excellent / facultyData.length) * 100)}% of faculty have excellent ratings (9.0+).`,
         action: "Recognize Top Performers",
       });
     }
@@ -1081,7 +1081,7 @@ const TrendsDashboard: React.FC = () => {
       {
         Metric: "Health Score",
         Value: metrics.healthScore.toFixed(2),
-        Unit: "/ 5.0",
+        Unit: "/ 10.0",
       },
       {
         Metric: "Total Responses",
@@ -1132,7 +1132,7 @@ const TrendsDashboard: React.FC = () => {
             {
               Metric: "Health Score",
               Value: metrics.healthScore.toFixed(2),
-              Unit: "/ 5.0",
+              Unit: "/ 10.0",
             },
             {
               Metric: "Total Responses",
@@ -1274,7 +1274,7 @@ const TrendsDashboard: React.FC = () => {
                     <ArrowTrendingUpIcon className="h-4 w-4 text-positive-main" />
                     Institution Health Score:{" "}
                     <span className="font-semibold text-primary-main">
-                      {metrics.healthScore.toFixed(2)}/5.0
+                      {metrics.healthScore.toFixed(2)}/10.0
                     </span>
                     {metrics.healthTrend !== 0 && (
                       <span
@@ -1625,7 +1625,7 @@ const TrendsDashboard: React.FC = () => {
                             <motion.div
                               initial={{ height: 0 }}
                               animate={{
-                                height: `${(trend.rating / 5) * 80}px`,
+                                height: `${(trend.rating / 10) * 80}px`,
                               }}
                               transition={{ duration: 0.8, delay: index * 0.1 }}
                               className={cn(

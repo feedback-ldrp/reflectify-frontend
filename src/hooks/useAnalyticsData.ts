@@ -130,6 +130,7 @@ export const useProcessedAnalytics = (filters: AnalyticsFilterParams = {}) => {
             totalLectureResponses: subject.lectureResponses,
             totalLabResponses: subject.labResponses,
             totalOverallResponses: subject.totalResponses,
+            uniqueStudents: subject.uniqueStudents,
         }));
 
         const facultyPerformance = optimizedData.facultyPerformance.map(
@@ -139,6 +140,7 @@ export const useProcessedAnalytics = (filters: AnalyticsFilterParams = {}) => {
                 academicYearId: filters.academicYearId || "all",
                 averageRating: faculty.averageRating,
                 totalResponses: faculty.totalResponses,
+                uniqueStudents: faculty.uniqueStudents,
             })
         );
 
@@ -151,6 +153,7 @@ export const useProcessedAnalytics = (filters: AnalyticsFilterParams = {}) => {
                 batch: "all",
                 averageRating: division.averageRating,
                 totalResponses: division.totalResponses,
+                uniqueStudents: division.uniqueStudents,
                 engagementScore: Math.min(
                     10,
                     Math.round(division.totalResponses / 5)
@@ -165,6 +168,7 @@ export const useProcessedAnalytics = (filters: AnalyticsFilterParams = {}) => {
                     academicYearString: year.academicYearString,
                     averageRating: year.averageRating,
                     responseCount: year.responseCount,
+                    uniqueStudents: year.uniqueStudents,
                 })),
             })
         );
@@ -176,6 +180,7 @@ export const useProcessedAnalytics = (filters: AnalyticsFilterParams = {}) => {
                     departmentName: department.departmentName,
                     averageRating: department.averageRating,
                     responseCount: department.responseCount,
+                    uniqueStudents: department.uniqueStudents,
                 })),
             })
         );
@@ -187,6 +192,7 @@ export const useProcessedAnalytics = (filters: AnalyticsFilterParams = {}) => {
                     divisionName: division.divisionName,
                     averageRating: division.averageRating,
                     responseCount: division.responseCount,
+                    uniqueStudents: division.uniqueStudents,
                 })),
             }));
 
