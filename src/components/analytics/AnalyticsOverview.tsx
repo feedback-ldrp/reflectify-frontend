@@ -7,7 +7,7 @@
 
 import React from "react";
 import { StatCard } from "@/components/ui/StatCard";
-import { Users, Star, MessageSquare, BarChart3, Target, GraduationCap } from "lucide-react";
+import { Users, Star, MessageSquare, BarChart3, GraduationCap } from "lucide-react";
 
 interface OverallStats {
   totalResponses: number;
@@ -32,7 +32,7 @@ export const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
       <StatCard
         title="Students Responded"
         value={stats?.uniqueStudents || 0}
@@ -75,15 +75,6 @@ export const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
         icon={Users}
         isLoading={isLoading}
         // subtitle="Total educators"
-        onClick={() => { }}
-      />
-
-      <StatCard
-        title="Divisions"
-        value={stats?.uniqueDivisions || 0}
-        icon={Target}
-        isLoading={isLoading}
-        // subtitle="Academic units"
         onClick={() => { }}
       />
     </div>
